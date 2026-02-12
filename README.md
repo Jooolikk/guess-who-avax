@@ -1,4 +1,5 @@
 # Guess Who on Avalanche
+! Built for Avalanche Build Games 2026. Forking for learning OK, commercial use requires permission.
 
 6-player on-chain social deduction game for Avalanche Build Games 2026.
 
@@ -21,3 +22,5 @@ Coming in Week 1: playable lobby + prize payout.
 
 ## 🤝 Join the build
 Fork and contribute during Build Games!
+
+! Built for Avalanche Build Games 2026. Forking for learning OK, commercial use requires permission.
