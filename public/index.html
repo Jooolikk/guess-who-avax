@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guess Who on Avalanche - Build Games 2026</title>
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh; padding: 20px; color: white;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 { text-align: center; margin-bottom: 30px; font-size: 2.5em; }
+        .status { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; margin-bottom: 20px; }
+        .controls { display: flex; gap: 15px; justify-content: center; margin-bottom: 30px; flex-wrap: wrap; }
+        button { 
+            padding: 12px 24px; font-size: 16px; border: none; border-radius: 8px; 
+            background: #f093fb; color: white; cursor: pointer; transition: all 0.3s;
+        }
+        button:hover { background: #f5576c; transform: translateY(-2px); }
+        button:disabled { background: #666; cursor: not-allowed; transform: none; }
+        .board { 
+            display: grid; grid-template-columns: repeat(10, 1fr); 
+            gap: 8px; max-width: 800px; margin: 0 auto 30px;
+        }
+        .character { 
+            aspect-ratio: 3/4; border: 3px solid rgba(255,255,255,0.3); 
+            border-radius: 12px; cursor: pointer; display: flex; align-items: center;
+            justify-content: center; font-size: 2em; transition: all 0.2s;
+            background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);
+        }
+        .character:hover { border-color: #f093fb; transform: scale(1.05); }
+        .character.active { border-color: #00ff88; background: rgba(0,255,136,0.2); }
+        .character.eliminated { opacity: 0.3; position: relative; }
+        .character.eliminated::after { content: '✕'; position: absolute; font-size: 1.5em; top: 5px; right: 5px; }
+        #myCharacter { font-size: 1.2em; margin: 20px 0; padding: 15px; background: rgba(0,0,0,0.4); border-radius: 10px; }
+        .guess-section { text-align: center; margin-top: 30px; }
+        input { padding: 12px; font-size: 16px; border-radius: 8px; border: none; width: 200px; margin-right: 10px; }
+        .game-info { display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 1.1em; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎲 Guess Who on AVAX</h1>
+        <div class="status" id="status">Connect wallet to play</div>
+        <div class="game-info">
+            <div>Game ID: <span id="gameId">0</span></div>
+            <div>Prize Pool: <span id="prizePool">0</span> AVAX</div>
+            <div>Players: <span id="playerCount">0</span>/6</div>
+        </div>
+        <div class="controls">
+            <button id="connectWallet">Connect Wallet</button>
+            <button id="joinGame" disabled>Join Game (0.01 AVAX)</button>
+            <button id="guessBtn" disabled>Guess My Character!</button>
+        </div>
+        
+        <div id="myCharacter" style="display: none;">
+            Your Secret Character: <span id="secretChar"></span> (ID: <span id="secretId"></span>)
+        </div>
+        
+        <div class="board" id="board"></div>
+        
+        <div class="guess-section">
+            <input id="guessInput" type="number" placeholder="Enter character ID (1-50)" disabled>
+            <button id="submitGuess" disabled>Submit Guess</button>
+        </div>
+    </div>
+
+    <script>
+        // Game state
+        const web3 = new Web3(window.ethereum);
+        let account, contract, gameId = 0, mySecretId = 0;
+        const CONTRACT_ADDRESS = '0x...'; // Replace after Fuji deploy
+        
+        // 50 characters from JSON
+        const characters = [
+            {id:1, emoji:'👱‍♂️🎩', name:'Blond Hat Guy'},
+            {id:2, emoji:'🧑‍🦰🕶️', name:'Red Glasses'},
+            {id:3, emoji:'👩‍🦳👒', name:'Silver Lady Hat'},
+            {id:4, emoji:'🧔‍♂️🧥', name:'Bearded Coat'},
+            {id:5, emoji:'👨‍🦲😎', name:'Bald Sunglasses'},
+            {id:6, emoji:'👱‍♀️💍', name:'Blond Ring'},
+            {id:7, emoji:'🧑‍🦳🎸', name:'White Guitar'},
+            {id:8, emoji:'👨‍🦰🚬', name:'Ginger Smoker'},
+            {id:9, emoji:'👩‍🦲👃', name:'Bald Big Nose'},
+            {id:10, emoji:'🧔‍♀️🧢', name:'Bearded Cap Girl'},
+            {id:11, emoji:'👦🕶️', name:'Kid Glasses'},
+            {id:12, emoji:'👩‍🦰🎩', name:'Red Hat Lady'},
+            {id:13, emoji:'🧔‍♂️👓', name:'Beard Glasses'},
+            {id:14, emoji:'👨‍🦳💼', name:'Old Suit'},
+            {id:15, emoji:'👱‍♂️🧢', name:'Blond Cap'},
+            {id:16, emoji:'🧑‍🦱🎸', name:'Curly Guitar'},
+            {id:17, emoji:'👩‍🦰🧥', name:'Red Coat'},
+            {id:18, emoji:'👨‍🦲🎩', name:'Bald Top Hat'},
+            {id:19, emoji:'🧑‍🦳🕶️', name:'White Sunglasses'},
+            {id:20, emoji:'👦💍', name:'Kid Ring'},
+            {id:21, emoji:'👩‍🦱🚬', name:'Curly Smoker'},
+            {id:22, emoji:'🧔‍♂️👃', name:'Big Nose Beard'},
+            {id:23, emoji:'👱‍♀️🧢', name:'Blond Cap Girl'},
+            {id:24, emoji:'👨‍🦰🎸', name:'Ginger Guitar'},
+            {id:25, emoji:'👩‍🦲💼', name:'Bald Suit'},
+            {id:26, emoji:'🧑‍🦰👓', name:'Red Glasses Girl'},
+            {id:27, emoji:'👨‍🦳🧥', name:'Old Coat'},
+            {id:28, emoji:'👦🎩', name:'Kid Top Hat'},
+            {id:29, emoji:'🧔‍♀️🕶️', name:'Bearded Sunglasses'},
+            {id:30, emoji:'👱‍♂️💍', name:'Blond Ring Guy'},
+            {id:31, emoji:'👩‍🦳🚬', name:'Silver Smoker'},
+            {id:32, emoji:'🧑‍🦱👃', name:'Curly Big Nose'},
+            {id:33, emoji:'👨‍🦲🧢', name:'Bald Cap'},
+            {id:34, emoji:'👩‍🦰🎸', name:'Red Guitar'},
+            {id:35, emoji:'🧔‍♂️💼', name:'Beard Suit'},
+            {id:36, emoji:'👦👓', name:'Kid Glasses 2'},
+            {id:37, emoji:'👱‍♀️🧥', name:'Blond Coat Girl'},
+            {id:38, emoji:'👨‍🦳🎩', name:'Old Top Hat'},
+            {id:39, emoji:'🧑‍🦰🧢
