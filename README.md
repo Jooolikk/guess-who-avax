@@ -1,4 +1,11 @@
-# Guess Who on Avalanche
+# Guess Who on Avalanche ⭐
+
+**Avalanche Build Games 2026 submission by Jooolikk**
+
+[![Built for Avalanche](https://img.shields.io/badge/Build%20Games-2026-blueviolet)](https://build.avax.network/build-games)
+
+**⚠️ This is a WIP hackathon project. Forking during competition prohibited.**
+
 ! Built for Avalanche Build Games 2026. Forking for learning OK, commercial use requires permission.
 
 6-player on-chain social deduction game for Avalanche Build Games 2026.
