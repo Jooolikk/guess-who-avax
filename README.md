@@ -1,4 +1,3 @@
-# guess-who-avax
 # Guess Who on Avalanche
 
 6-player on-chain social deduction game for Avalanche Build Games 2026.
