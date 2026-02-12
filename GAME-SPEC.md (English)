@@ -1,0 +1,105 @@
+# Full Game Mechanics - Guess Who on Avalanche
+
+## 1. Lobby & Entry (Pre-game)
+
+**Flow:**
+- Each player pays **0.01 AVAX** entry fee via MetaMask
+- Smart contract collects **0.06 AVAX** total prize pool
+- When **6 players** join → auto-trigger Chainlink VRF
+- VRF assigns **6 unique secret character IDs** from 100+ pool
+- Each player receives **their secret character** (private info)
+
+**Example assignment:**
+```
+Player 1: Character #47 (private)
+Player 2: Character #13  
+Player 3: Character #82
+Player 4: Character #29
+Player 5: Character #64
+Player 6: Character #91
+```
+
+## 2. Game Board (Shared View)
+
+**6x10 grid** - 60 visible characters for all players:
+```
+[👱‍♂️🎩] [🧑‍🦰🕶️] [👩‍🦳👒] [🧔‍♂️🧥] [👨‍🦲😎] ...
+[👱‍♀️💍] [🧑‍🦳🎸] [👨‍🦰🚬] [👩‍🦲👃] [🧔‍♀️🧢] ...
+[... 8 more rows ...]
+```
+
+**Character attributes** (5-7 options each):
+- Hair: blond/red/brown/black/white/bald
+- Headwear: hat/cap/none  
+- Face: beard/glasses/sunglasses/bigNose/none
+- Clothing: coat/scarf/ring/none
+- Accessories: guitar/cigarette/book/none
+
+## 3. Question Rounds (3-5 rounds)
+
+**Rounds 1-2 (Broad questions):**
+- Players take turns asking **yes/no questions**:
+  - "Who has a hat?"
+  - "Who is blond?" 
+  - "Who has a beard?"
+- **Collective voting**: All players click matching characters
+- **Auto-elimination**: Characters with <4/6 votes get grayed out
+
+**Rounds 3-4 (Narrowing):**
+
+Start:     60 characters
+After R1:  24 characters (40%)
+After R2:   9 characters (15%) 
+After R3:   3 characters (5%)
+
+
+## 4. Final Guessing Round
+
+**3-6 characters remain:**
+- Each player sees their **"suspect pool"**
+- Players guess in turn order:
+```
+Player 1: "My character is #47?" → Contract checks → ❌ Wrong
+Player 2: "My character is #13?" → Contract checks → ✅ WINNER!
+```
+
+## 5. Prize Distribution (On-chain)
+
+Total pool: 0.06 AVAX
+Winner:     80% = 0.048 AVAX (auto-transfer)
+Fee/Next:   20% = 0.012 AVAX
+
+
+## 6. WebSocket Events
+
+join: {player: "0x123...", slot: 1}
+characters_assigned: {gameId: 5, playerCharacters: } [walkabout](https://walkabout.games/application-form/)
+eliminate: {characters:, round: 2} [perplexity](https://www.perplexity.ai/search/327101ab-32cd-4fc3-8662-ffca363ebf0d)
+guess: {player: "0x123...", characterId: 47}
+winner: {player: "0x123...", prize: "0.048 AVAX"}
+
+
+## 7. Win Conditions & Edge Cases
+
+**Win**: First player to name their exact secret ID
+**Tie**: 2+ simultaneous correct guesses → split prize
+**Timeout**: 10min per round → random winner from remaining pool
+**Refunds**: <6 players after 30min → full entry refunds
+
+
+## 8. User Flow
+
+1. [Connect Wallet] → "0x1234... connected"
+2. [Join Game] → "Paid 0.01 AVAX. 5 players needed..."
+3. [Game Started!] → "Your character: 👱‍♂️🎩 #47" (private)
+4. Round 1 → "Who has a hat?" → Click 18 matching characters
+5. Board narrows → 24/60 active
+6. Round 3 → 3 remain: [👱‍♂️🎩][🧑‍🦰🕶️][🧔‍♀️🧢]
+7. [Guess #47] → ✅ "Winner! +0.048 AVAX received"
+
+
+## Board State Visualization
+
+Start:      [60 bright characters]  
+Round 2:    [24 bright + 36 grayed]  
+Final:      [3 bright + 57 grayed]  
