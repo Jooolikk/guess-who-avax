@@ -3,116 +3,329 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guess Who on Avalanche - Build Games 2026</title>
+    <title>Guess Who on Avalanche - Fuji Testnet</title>
     <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
             font-family: -apple-system, BlinkMacSystemFont, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh; padding: 20px; color: white;
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
         }
         .container { max-width: 1200px; margin: 0 auto; }
         h1 { text-align: center; margin-bottom: 30px; font-size: 2.5em; }
-        .status { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; margin-bottom: 20px; }
-        .controls { display: flex; gap: 15px; justify-content: center; margin-bottom: 30px; flex-wrap: wrap; }
         button { 
-            padding: 12px 24px; font-size: 16px; border: none; border-radius: 8px; 
-            background: #f093fb; color: white; cursor: pointer; transition: all 0.3s;
+            padding: 15px 30px; 
+            font-size: 1.1em; 
+            background: #E84142; 
+            color: white; 
+            border: none; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            margin: 10px; 
+            transition: all 0.3s;
         }
-        button:hover { background: #f5576c; transform: translateY(-2px); }
+        button:hover { background: #c8102e; transform: translateY(-2px); }
         button:disabled { background: #666; cursor: not-allowed; transform: none; }
+        #account { color: #4ade80; margin: 20px 0; text-align: center; font-size: 1.1em; }
+        .lobby { 
+            display: flex; justify-content: center; 
+            font-size: 4em; 
+            margin: 50px 0; 
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        #gameBoard { text-align: center; }
+        #stats { font-weight: bold; font-size: 1.5em; margin: 20px 0; }
         .board { 
-            display: grid; grid-template-columns: repeat(10, 1fr); 
-            gap: 8px; max-width: 800px; margin: 0 auto 30px;
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
+            gap: 15px; 
+            margin: 30px 0; 
         }
         .character { 
-            aspect-ratio: 3/4; border: 3px solid rgba(255,255,255,0.3); 
-            border-radius: 12px; cursor: pointer; display: flex; align-items: center;
-            justify-content: center; font-size: 2em; transition: all 0.2s;
-            background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);
+            cursor: pointer; 
+            padding: 20px; 
+            border: 2px solid #ccc; 
+            border-radius: 12px; 
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s;
         }
-        .character:hover { border-color: #f093fb; transform: scale(1.05); }
-        .character.active { border-color: #00ff88; background: rgba(0,255,136,0.2); }
-        .character.eliminated { opacity: 0.3; position: relative; }
-        .character.eliminated::after { content: '✕'; position: absolute; font-size: 1.5em; top: 5px; right: 5px; }
-        #myCharacter { font-size: 1.2em; margin: 20px 0; padding: 15px; background: rgba(0,0,0,0.4); border-radius: 10px; }
-        .guess-section { text-align: center; margin-top: 30px; }
-        input { padding: 12px; font-size: 16px; border-radius: 8px; border: none; width: 200px; margin-right: 10px; }
-        .game-info { display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 1.1em; }
+        .character:hover { transform: scale(1.05); border-color: #E84142; }
+        .character.eliminated { 
+            opacity: 0.3; 
+            text-decoration: line-through; 
+            cursor: default;
+            transform: none;
+        }
+        .character.secret-highlight { 
+            border-color: #E84142; 
+            background: rgba(232,65,66,0.2) !important;
+            box-shadow: 0 0 20px rgba(232,65,66,0.5);
+        }
+        .character-emoji { font-size: 3em; margin-bottom: 10px; }
+        .character-name { font-size: 1.1em; font-weight: bold; }
+        .question-section { 
+            background: rgba(0,0,0,0.3); 
+            padding: 30px; 
+            border-radius: 15px; 
+            margin: 30px 0;
+        }
+        .question-section.hidden { display: none; }
+        #currentQuestion { 
+            font-size: 1.5em; 
+            margin-bottom: 30px; 
+            font-weight: bold;
+            min-height: 50px;
+        }
+        .pulse { animation: pulse 1s infinite; }
+        @keyframes pulse { 
+            0%, 100% { transform: scale(1); } 
+            50% { transform: scale(1.05); } 
+        }
+        .secret-info { 
+            background: rgba(255,255,255,0.1); 
+            padding: 20px; 
+            border-radius: 12px; 
+            margin: 20px 0;
+            font-size: 1.2em;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🎲 Guess Who on AVAX</h1>
-        <div class="status" id="status">Connect wallet to play</div>
-        <div class="game-info">
-            <div>Game ID: <span id="gameId">0</span></div>
-            <div>Prize Pool: <span id="prizePool">0</span> AVAX</div>
-            <div>Players: <span id="playerCount">0</span>/6</div>
-        </div>
-        <div class="controls">
-            <button id="connectWallet">Connect Wallet</button>
-            <button id="joinGame" disabled>Join Game (0.01 AVAX)</button>
-            <button id="guessBtn" disabled>Guess My Character!</button>
-        </div>
+        <h1>🧑‍🤝‍🧑 Guess Who on Avalanche</h1>
         
-        <div id="myCharacter" style="display: none;">
-            Your Secret Character: <span id="secretChar"></span> (ID: <span id="secretId"></span>)
-        </div>
+        <button id="connect">Connect MetaMask</button>
+        <div id="account"></div>
         
-        <div class="board" id="board"></div>
+        <button id="joinGame" style="display:none;">Join Game (0.01 AVAX)</button>
+        <div id="lobby" class="lobby" style="display:none;">0/6 players</div>
         
-        <div class="guess-section">
-            <input id="guessInput" type="number" placeholder="Enter character ID (1-50)" disabled>
-            <button id="submitGuess" disabled>Submit Guess</button>
+        <div id="gameBoard" style="display:none;">
+            <div class="secret-info">
+                <h2>Your Secret Character: <span id="secretChar">?</span></h2>
+                <div id="stats">25 characters remaining</div>
+            </div>
+            
+            <div class="board" id="board"></div>
+            
+            <button id="nextQuestionBtn">Ask Next Question</button>
+            
+            <div id="questionSection" class="question-section hidden">
+                <div id="currentQuestion"></div>
+                <button id="answerYes">Yes 👍</button>
+                <button id="answerNo">No 👎</button>
+            </div>
+            
+            <button id="guessBtn" class="pulse">Guess My Character</button>
         </div>
     </div>
 
     <script>
-        // Game state
-        const web3 = new Web3(window.ethereum);
-        let account, contract, gameId = 0, mySecretId = 0;
-        const CONTRACT_ADDRESS = '0x...'; // Replace after Fuji deploy
-        
-        // 50 characters from JSON
-        const characters = [
-            {id:1, emoji:'👱‍♂️🎩', name:'Blond Hat Guy'},
-            {id:2, emoji:'🧑‍🦰🕶️', name:'Red Glasses'},
-            {id:3, emoji:'👩‍🦳👒', name:'Silver Lady Hat'},
-            {id:4, emoji:'🧔‍♂️🧥', name:'Bearded Coat'},
-            {id:5, emoji:'👨‍🦲😎', name:'Bald Sunglasses'},
-            {id:6, emoji:'👱‍♀️💍', name:'Blond Ring'},
-            {id:7, emoji:'🧑‍🦳🎸', name:'White Guitar'},
-            {id:8, emoji:'👨‍🦰🚬', name:'Ginger Smoker'},
-            {id:9, emoji:'👩‍🦲👃', name:'Bald Big Nose'},
-            {id:10, emoji:'🧔‍♀️🧢', name:'Bearded Cap Girl'},
-            {id:11, emoji:'👦🕶️', name:'Kid Glasses'},
-            {id:12, emoji:'👩‍🦰🎩', name:'Red Hat Lady'},
-            {id:13, emoji:'🧔‍♂️👓', name:'Beard Glasses'},
-            {id:14, emoji:'👨‍🦳💼', name:'Old Suit'},
-            {id:15, emoji:'👱‍♂️🧢', name:'Blond Cap'},
-            {id:16, emoji:'🧑‍🦱🎸', name:'Curly Guitar'},
-            {id:17, emoji:'👩‍🦰🧥', name:'Red Coat'},
-            {id:18, emoji:'👨‍🦲🎩', name:'Bald Top Hat'},
-            {id:19, emoji:'🧑‍🦳🕶️', name:'White Sunglasses'},
-            {id:20, emoji:'👦💍', name:'Kid Ring'},
-            {id:21, emoji:'👩‍🦱🚬', name:'Curly Smoker'},
-            {id:22, emoji:'🧔‍♂️👃', name:'Big Nose Beard'},
-            {id:23, emoji:'👱‍♀️🧢', name:'Blond Cap Girl'},
-            {id:24, emoji:'👨‍🦰🎸', name:'Ginger Guitar'},
-            {id:25, emoji:'👩‍🦲💼', name:'Bald Suit'},
-            {id:26, emoji:'🧑‍🦰👓', name:'Red Glasses Girl'},
-            {id:27, emoji:'👨‍🦳🧥', name:'Old Coat'},
-            {id:28, emoji:'👦🎩', name:'Kid Top Hat'},
-            {id:29, emoji:'🧔‍♀️🕶️', name:'Bearded Sunglasses'},
-            {id:30, emoji:'👱‍♂️💍', name:'Blond Ring Guy'},
-            {id:31, emoji:'👩‍🦳🚬', name:'Silver Smoker'},
-            {id:32, emoji:'🧑‍🦱👃', name:'Curly Big Nose'},
-            {id:33, emoji:'👨‍🦲🧢', name:'Bald Cap'},
-            {id:34, emoji:'👩‍🦰🎸', name:'Red Guitar'},
-            {id:35, emoji:'🧔‍♂️💼', name:'Beard Suit'},
-            {id:36, emoji:'👦👓', name:'Kid Glasses 2'},
-            {id:37, emoji:'👱‍♀️🧥', name:'Blond Coat Girl'},
-            {id:38, emoji:'👨‍🦳🎩', name:'Old Top Hat'},
-            {id:39, emoji:'🧑‍🦰🧢
+        const QUESTIONS = [
+            { id: 'gender', attr: 'gender', text: 'Am I a man?' },
+            { id: 'age_20_35', attr: 'age_20_35', text: 'Am I between 20 and 35 years old?' },
+            { id: 'age_36_50', attr: 'age_36_50', text: 'Am I between 36 and 50 years old?' },
+            { id: 'age_51_plus', attr: 'age_51_plus', text: 'Am I older than 50?' },
+            { id: 'alive2026', attr: 'alive2026', text: 'Am I alive in 2026?' },
+            { id: 'rock', attr: 'rock', text: 'Do I sing rock music?' },
+            { id: 'pop', attr: 'pop', text: 'Do I sing pop music?' },
+            { id: 'rap', attr: 'rap', text: 'Do I perform rap or hip-hop?' },
+            { id: 'american', attr: 'american', text: 'Am I American?' },
+            { id: 'british', attr: 'british', text: 'Am I British?' },
+            { id: 'guitarist', attr: 'guitarist', text: 'Do I play guitar on stage?' },
+            { id: 'pianist', attr: 'pianist', text: 'Do I play piano or keyboards?' },
+            { id: 'beard', attr: 'beard', text: 'Do I have a beard?' },
+            { id: 'glasses', attr: 'glasses', text: 'Do I wear glasses?' }
+        ];
+
+        let characters = [];
+        let remainingIds = [];
+        let askedQuestions = [];
+        let currentQuestion = null;
+        let mySecretCharacterId = null;
+        let web3, account;
+
+        const elements = {
+            connectBtn: document.getElementById('connect'),
+            accountEl: document.getElementById('account'),
+            joinBtn: document.getElementById('joinGame'),
+            lobbyEl: document.getElementById('lobby'),
+            gameBoardEl: document.getElementById('gameBoard'),
+            secretCharEl: document.getElementById('secretChar'),
+            boardEl: document.getElementById('board'),
+            questionEl: document.getElementById('currentQuestion'),
+            questionSection: document.getElementById('questionSection'),
+            answerYes: document.getElementById('answerYes'),
+            answerNo: document.getElementById('answerNo'),
+            guessBtn: document.getElementById('guessBtn'),
+            statsEl: document.getElementById('stats'),
+            nextQuestionBtn: document.getElementById('nextQuestionBtn')
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            bindEvents();
+            loadCharacters();
+        });
+
+        function bindEvents() {
+            elements.connectBtn.onclick = connectWallet;
+            elements.joinBtn.onclick = joinGame;
+            elements.answerYes.onclick = () => applyAnswer(true);
+            elements.answerNo.onclick = () => applyAnswer(false);
+            elements.guessBtn.onclick = guessCharacter;
+            elements.nextQuestionBtn.onclick = showQuestion;
+        }
+
+        async function loadCharacters() {
+            try {
+                const response = await fetch('characters_25.json');
+                characters = await response.json();
+                remainingIds = characters.map(c => c.id);
+            } catch (error) {
+                console.error('Failed to load characters:', error);
+                alert('Please add characters_25.json file');
+            }
+        }
+
+        async function connectWallet() {
+            if (typeof window.ethereum !== 'undefined') {
+                try {
+                    await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    web3 = new Web3(window.ethereum);
+                    const accounts = await web3.eth.getAccounts();
+                    account = accounts[0];
+                    
+                    elements.accountEl.textContent = `Connected: ${account.slice(0,6)}...${account.slice(-4)}`;
+                    elements.connectBtn.style.display = 'none';
+                    elements.joinBtn.style.display = 'block';
+                } catch (error) {
+                    console.error('Wallet connection failed:', error);
+                }
+            } else {
+                alert('Please install MetaMask!');
+            }
+        }
+
+        async function joinGame() {
+            if (!account) return;
+            
+            elements.joinBtn.disabled = true;
+            elements.joinBtn.textContent = 'Joining...';
+            
+            setTimeout(() => {
+                mySecretCharacterId = Math.floor(Math.random() * 25);
+                elements.lobbyEl.style.display = 'none';
+                elements.gameBoardEl.style.display = 'block';
+                updateUI();
+                renderBoard();
+            }, 2000);
+        }
+
+        function applyAnswer(answerYes) {
+            if (!currentQuestion) return;
+            
+            remainingIds = remainingIds.filter(id => {
+                const value = characters[id][currentQuestion.attr];
+                if (value === 2) return true;
+                return answerYes ? (value === 1) : (value === 0);
+            });
+            
+            elements.questionSection.classList.add('hidden');
+            askedQuestions.push(currentQuestion.id);
+            currentQuestion = null;
+            renderBoard();
+            updateUI();
+        }
+
+        function pickNextQuestion() {
+            const available = QUESTIONS.filter(q => !askedQuestions.includes(q.id));
+            if (available.length === 0) return null;
+            const question = available[Math.floor(Math.random() * available.length)];
+            askedQuestions.push(question.id);
+            return question;
+        }
+
+        function showQuestion() {
+            currentQuestion = pickNextQuestion();
+            if (currentQuestion && elements.questionEl) {
+                elements.questionEl.textContent = currentQuestion.text;
+                elements.questionSection.classList.remove('hidden');
+            }
+        }
+
+        function guessCharacter() {
+            if (!mySecretCharacterId || !remainingIds.includes(mySecretCharacterId)) {
+                alert('Wrong guess! Try again.');
+                return;
+            }
+            showWin();
+        }
+
+        function showWin() {
+            alert('🎉 WINNER! You guessed correctly!');
+            resetGame();
+        }
+
+        function resetGame() {
+            remainingIds = characters.map(c => c.id);
+            askedQuestions = [];
+            currentQuestion = null;
+            renderBoard();
+            updateUI();
+        }
+
+        function renderBoard() {
+            const board = elements.boardEl;
+            board.innerHTML = '';
+            
+            characters.forEach(character => {
+                const div = document.createElement('div');
+                div.className = 'character';
+                div.dataset.id = character.id;
+                
+                if (!remainingIds.includes(character.id)) {
+                    div.classList.add('eliminated');
+                } else if (character.id === mySecretCharacterId) {
+                    div.classList.add('secret-highlight');
+                }
+                
+                div.innerHTML = `
+                    <div class="character-emoji">🎤</div>
+                    <div class="character-name">${character.name}</div>
+                `;
+                
+                div.addEventListener('click', () => {
+                    if (remainingIds.includes(character.id)) {
+                        guessCharacter();
+                    }
+                });
+                
+                board.appendChild(div);
+            });
+        }
+
+        function updateUI() {
+            const remainingCount = remainingIds.length;
+            
+            if (elements.statsEl) {
+                elements.statsEl.textContent = `${remainingCount} characters remaining`;
+            }
+            
+            if (elements.secretCharEl) {
+                const secretChar = characters.find(c => c.id === mySecretCharacterId);
+                elements.secretCharEl.textContent = secretChar ? secretChar.name : '?';
+            }
+            
+            if (remainingCount <= 3) {
+                elements.guessBtn.classList.add('pulse');
+            } else {
+                elements.guessBtn.classList.remove('pulse');
+            }
+        }
+    </script>
+</body>
+</html>
