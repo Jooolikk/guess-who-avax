@@ -333,4 +333,520 @@
     }
 
     .notification {
-      posi
+      position: fixed;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 10px 20px;
+      border-radius: 999px;
+      background: rgba(0,0,0,0.9);
+      color:#fff;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 999;
+    }
+    .notification.show { animation: popFade 1.2s ease forwards; }
+    .notification.yes { background: rgba(40,150,80,0.92); }
+    .notification.no { background: rgba(190,40,40,0.92); }
+    .notification.win { background: rgba(255,180,40,0.95); color:#3b0b20; }
+    @keyframes popFade {
+      0% { opacity:0; transform:translate(-50%,-10px) scale(0.9); }
+      10% { opacity:1; transform:translate(-50%,0) scale(1); }
+      80% { opacity:1; }
+      100% { opacity:0; transform:translate(-50%,0) scale(1); }
+    }
+
+    .fireworks {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,0.8) 0, transparent 35%),
+        radial-gradient(circle at 80% 30%, rgba(255,220,150,0.8) 0, transparent 40%),
+        radial-gradient(circle at 30% 70%, rgba(255,80,80,0.8) 0, transparent 45%);
+      opacity: 0;
+      z-index: 900;
+    }
+    .fireworks.show { animation: fwFade 1.8s ease-out forwards; }
+    @keyframes fwFade {
+      0% { opacity:0; }
+      20% { opacity:1; }
+      60% { opacity:1; }
+      100% { opacity:0; }
+    }
+
+    .win-overlay {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      pointer-events: none;
+      z-index: 901;
+      opacity: 0;
+    }
+    .win-overlay.show {
+      pointer-events: auto;
+      animation: winPop 1.4s ease forwards;
+    }
+    @keyframes winPop {
+      0% { opacity:0; transform:scale(0.8); }
+      25% { opacity:1; transform:scale(1.05); }
+      60% { transform:scale(1); }
+      100% { opacity:1; transform:scale(1); }
+    }
+    .win-card {
+      padding: 24px 30px;
+      border-radius: 20px;
+      background: radial-gradient(circle at top,#fff6c4,#ffc857,#ff7b37);
+      color:#3b0b20;
+      text-align: center;
+      box-shadow: 0 22px 55px rgba(0,0,0,0.9);
+    }
+    .win-title {
+      font-weight: 900;
+      font-size: 1.8rem;
+      margin-bottom: 8px;
+      letter-spacing: 0.12em;
+    }
+    .win-amount { font-size: 1.2rem; font-weight: 800; margin-bottom: 4px; }
+    .win-sub { font-size: 0.9rem; }
+    .sub-message { margin-top: 10px; font-size: 0.9rem; opacity: 0.9; }
+
+    .logo-bottom-left {
+      position: absolute;
+      bottom: 12px;
+      left: 22px;
+      width: 130px;
+      opacity: 0.95;
+      pointer-events: none;
+    }
+
+    @media (max-width: 900px) {
+      .question-panel { grid-template-columns: 1fr; }
+      .table { height: 260px; }
+      .seat-6 { top: 86%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="notification" id="notif"></div>
+  <div class="fireworks" id="fireworks"></div>
+  <div class="win-overlay" id="winOverlay">
+    <div class="win-card">
+      <div class="win-title">YOU WON!</div>
+      <div class="win-amount" id="winAmount">+0.00 AVAX</div>
+      <div class="win-sub">Prize sent to your wallet</div>
+      <div class="sub-message">SORRY, TRY ANOTHER ROUND! for other players</div>
+    </div>
+  </div>
+
+  <div class="app">
+    <div class="top-bar">
+      <button class="top-btn">Profile</button>
+      <button class="top-btn">Settings</button>
+      <button class="top-btn" id="walletConnect">Wallet connect</button>
+    </div>
+
+    <div class="main-card">
+      <img src="logo.png" alt="Guess Who Logo" class="logo-bottom-left">
+      <button class="exit-btn" id="exitBtn">Exit Game</button>
+
+      <div class="main-inner">
+        <div class="center-start">
+          <button class="start-btn" id="startGame">
+            <span class="start-btn-line">START</span>
+            <span class="start-btn-line">THE</span>
+            <span class="start-btn-line">GAME</span>
+          </button>
+        </div>
+
+        <div class="table-wrapper">
+          <div class="table" id="table">
+            <div class="table-logo">Avalanche</div>
+
+            <div class="player-seat seat-1" data-seat="1">
+              <div class="player-card"><div class="player-card-inner" id="cardName1">–</div></div>
+              <div class="player-body"><div class="player-number">1</div></div>
+            </div>
+            <div class="player-seat seat-2" data-seat="2">
+              <div class="player-card"><div class="player-card-inner" id="cardName2">–</div></div>
+              <div class="player-body"><div class="player-number">2</div></div>
+            </div>
+            <div class="player-seat seat-3" data-seat="3">
+              <div class="player-card"><div class="player-card-inner" id="cardName3">–</div></div>
+              <div class="player-body"><div class="player-number">3</div></div>
+            </div>
+            <div class="player-seat seat-4" data-seat="4">
+              <div class="player-card"><div class="player-card-inner" id="cardName4">–</div></div>
+              <div class="player-body"><div class="player-number">4</div></div>
+            </div>
+            <div class="player-seat seat-5" data-seat="5">
+              <div class="player-card"><div class="player-card-inner" id="cardName5">–</div></div>
+              <div class="player-body"><div class="player-number">5</div></div>
+            </div>
+            <div class="player-seat seat-6" data-seat="6">
+              <div class="player-card"><div class="player-card-inner" id="cardName6">–</div></div>
+              <div class="player-body"><div class="player-number">6</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="question-panel">
+          <div class="qa-left">
+            <div class="question-grid" id="questionGrid"></div>
+          </div>
+          <div class="guess-panel">
+            <button class="guess-main-btn" id="guessBtn" disabled>
+              <span class="guess-main-btn-line">GUESS</span>
+              <span class="guess-main-btn-line">WHO</span>
+              <span class="guess-main-btn-line">?</span>
+            </button>
+            <div class="guess-options" id="guessOptions"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const QUESTION_POOL = [
+      { id: 'gender', attr: 'gender', text: 'Am I a man?' },
+      { id: 'age_20_35', attr: 'age_20_35', text: 'Am I between 20 and 35 years old?' },
+      { id: 'age_36_50', attr: 'age_36_50', text: 'Am I between 36 and 50 years old?' },
+      { id: 'age_51_plus', attr: 'age_51_plus', text: 'Am I older than 50?' },
+      { id: 'alive2026', attr: 'alive2026', text: 'Am I alive in 2026?' },
+      { id: 'rock', attr: 'rock', text: 'Do I sing rock music?' },
+      { id: 'pop', attr: 'pop', text: 'Do I sing pop music?' },
+      { id: 'rap', attr: 'rap', text: 'Do I perform rap or hip-hop?' },
+      { id: 'american', attr: 'american', text: 'Am I American?' },
+      { id: 'british', attr: 'british', text: 'Am I British?' },
+      { id: 'guitarist', attr: 'guitarist', text: 'Do I play guitar on stage?' },
+      { id: 'pianist', attr: 'pianist', text: 'Do I play piano or keyboards?' },
+      { id: 'beard', attr: 'beard', text: 'Do I have a beard?' },
+      { id: 'glasses', attr: 'glasses', text: 'Do I wear glasses?' }
+    ];
+
+    let characters = [];
+    let assignedCharacters = [];
+    let activeSeat = 1;       // 1 = you, 2-6 = bots
+    let currentSeat = null;
+    let askedQuestionIds = new Set();
+    let yesStreakForSeat = {};
+    let remainingIdsPerSeat = {};
+    let gameStarted = false;
+    let account = null;
+
+    const notifEl = document.getElementById('notif');
+    const startBtn = document.getElementById('startGame');
+    const guessBtn = document.getElementById('guessBtn');
+    const questionGrid = document.getElementById('questionGrid');
+    const exitBtn = document.getElementById('exitBtn');
+    const guessOptionsEl = document.getElementById('guessOptions');
+    const fireworksEl = document.getElementById('fireworks');
+    const winOverlay = document.getElementById('winOverlay');
+    const winAmountEl = document.getElementById('winAmount');
+    const walletConnectBtn = document.getElementById('walletConnect');
+
+    async function loadCharacters() {
+      const res = await fetch('characters_25.json');
+      characters = await res.json();
+    }
+
+    function showNotif(message, type = '') {
+      notifEl.textContent = message;
+      notifEl.className = 'notification';
+      if (type) notifEl.classList.add(type);
+      requestAnimationFrame(() => {
+        notifEl.classList.add('show');
+        setTimeout(() => notifEl.classList.remove('show'), 1200);
+      });
+    }
+
+    function shuffle(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function randomSample(arr, count, excludeIds = []) {
+      const pool = arr.filter(q => !excludeIds.includes(q.id));
+      const sh = shuffle(pool);
+      return sh.slice(0, Math.min(count, sh.length));
+    }
+
+    async function connectWallet() {
+      if (!window.ethereum) {
+        alert('Please install MetaMask');
+        return;
+      }
+      try {
+        const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+        account = accounts[0];
+        showNotif('Wallet connected', 'yes');
+      } catch (e) {
+        console.error(e);
+        showNotif('Wallet rejected', 'no');
+      }
+    }
+
+    async function handleStart() {
+      if (!characters.length) await loadCharacters();
+      if (!window.ethereum) {
+        const ok = confirm('MetaMask not found. Continue demo without wallet?');
+        if (!ok) return;
+      } else if (!account) {
+        await connectWallet();
+      }
+
+      const confirmed = confirm('Pay 0.01 AVAX entry fee to start?');
+      if (!confirmed) return;
+
+      // Here smart contract joinGame() with 0.01 AVAX will be called in real version
+      initGameState();
+    }
+
+    function initGameState() {
+      gameStarted = true;
+      askedQuestionIds.clear();
+      yesStreakForSeat = {};
+      remainingIdsPerSeat = {};
+      guessOptionsEl.style.display = 'none';
+      guessOptionsEl.innerHTML = '';
+      winOverlay.classList.remove('show');
+      fireworksEl.classList.remove('show');
+
+      const shuffled = shuffle(characters);
+      assignedCharacters = shuffled.slice(0, 6);
+
+      for (let seat = 1; seat <= 6; seat++) {
+        const char = assignedCharacters[seat - 1];
+        const label = document.getElementById('cardName' + seat);
+        label.textContent = char.name;
+        const seatEl = document.querySelector('.player-seat[data-seat="' + seat + '"]');
+        seatEl.classList.remove('player-out');
+        seatEl.classList.remove('player-name-hidden');
+        seatEl.querySelectorAll('.turn-badge').forEach(b => b.remove());
+        remainingIdsPerSeat[seat] = assignedCharacters.map(c => c.id);
+        yesStreakForSeat[seat] = 0;
+      }
+
+      const randomFirst = Math.floor(Math.random() * 6) + 1;
+      currentSeat = randomFirst;
+      const activeSeatEl = document.querySelector('.player-seat[data-seat="' + activeSeat + '"]');
+      activeSeatEl.classList.add('player-name-hidden'); // you do not see your own
+      setTurnBadge(currentSeat);
+      showNotif('Player ' + currentSeat + ' starts', 'yes');
+      renderQuestionsForSeat(currentSeat);
+      updateGuessButton();
+      if (currentSeat !== activeSeat) {
+        setTimeout(botTurnStep, 1000);
+      }
+    }
+
+    function setTurnBadge(seatNumber) {
+      document.querySelectorAll('.turn-badge').forEach(b => b.remove());
+      const seatEl = document.querySelector('.player-seat[data-seat="' + seatNumber + '"]');
+      const badge = document.createElement('div');
+      badge.className = 'turn-badge';
+      badge.textContent = (seatNumber === activeSeat ? 'You' : 'Bot ' + seatNumber) + ' turn';
+      seatEl.appendChild(badge);
+    }
+
+    function renderQuestionsForSeat(seat) {
+      questionGrid.innerHTML = '';
+      const usedIds = Array.from(askedQuestionIds);
+      const roundQuestions = randomSample(QUESTION_POOL, 4, usedIds);
+      roundQuestions.forEach(q => {
+        const btn = document.createElement('button');
+        btn.className = 'question-btn';
+        btn.dataset.qid = q.id;
+        btn.dataset.attr = q.attr;
+        btn.innerHTML = '<span class="label">' + q.text + '</span>';
+        if (seat === activeSeat) {
+          btn.addEventListener('click', () => handleQuestionClick(seat, btn, q));
+        }
+        questionGrid.appendChild(btn);
+      });
+    }
+
+    function handleQuestionClick(seat, btn, question) {
+      if (!gameStarted || seat !== currentSeat || seat !== activeSeat) return;
+      answerQuestion(seat, btn, question);
+    }
+
+    function answerQuestion(seat, btn, question) {
+      const playerChar = assignedCharacters[seat - 1];
+      const v = playerChar[question.attr];
+      const isYes = v === 1;
+
+      if (v === 2) {
+        if (btn) btn.classList.add('wrong');
+        showNotif('Unknown', 'no');
+        askedQuestionIds.add(question.id);
+        yesStreakForSeat[seat] = 0;
+        updateGuessButton();
+        passTurn();
+        return;
+      }
+
+      askedQuestionIds.add(question.id);
+      if (isYes) {
+        if (btn) btn.classList.add('correct');
+        showNotif('YES', 'yes');
+        yesStreakForSeat[seat] += 1;
+        filterRemainingForSeat(seat, question.attr, true);
+        updateGuessButton();
+        setTimeout(() => {
+          renderQuestionsForSeat(seat);
+          if (seat !== activeSeat) setTimeout(botTurnStep, 600);
+        }, 600);
+      } else {
+        if (btn) btn.classList.add('wrong');
+        showNotif('NO', 'no');
+        filterRemainingForSeat(seat, question.attr, false);
+        yesStreakForSeat[seat] = 0;
+        updateGuessButton();
+        passTurn();
+      }
+    }
+
+    function filterRemainingForSeat(seat, attr, answerYes) {
+      const remaining = remainingIdsPerSeat[seat];
+      remainingIdsPerSeat[seat] = remaining.filter(id => {
+        const char = assignedCharacters.find(c => c.id === id);
+        const v = char[attr];
+        if (v === 2) return true;
+        return answerYes ? v === 1 : v === 0;
+      });
+    }
+
+    function updateGuessButton() {
+      guessBtn.disabled = !(gameStarted && currentSeat === activeSeat && yesStreakForSeat[activeSeat] > 0);
+    }
+
+    function passTurn() {
+      let nextSeat = currentSeat;
+      for (let i = 0; i < 6; i++) {
+        nextSeat = ((nextSeat) % 6) + 1;
+        const seatEl = document.querySelector('.player-seat[data-seat="' + nextSeat + '"]');
+        if (!seatEl.classList.contains('player-out')) {
+          currentSeat = nextSeat;
+          break;
+        }
+      }
+      setTurnBadge(currentSeat);
+      renderQuestionsForSeat(currentSeat);
+      updateGuessButton();
+      if (currentSeat !== activeSeat && gameStarted) {
+        setTimeout(botTurnStep, 800);
+      }
+    }
+
+    function botTurnStep() {
+      if (!gameStarted || currentSeat === activeSeat) return;
+      const qButtons = Array.from(document.querySelectorAll('.question-btn'));
+      if (!qButtons.length) return;
+      const btn = qButtons[Math.floor(Math.random() * qButtons.length)];
+      const qid = btn.dataset.qid;
+      const attr = btn.dataset.attr;
+      const question = QUESTION_POOL.find(q => q.id === qid);
+      answerQuestion(currentSeat, btn, question);
+
+      if (gameStarted && yesStreakForSeat[currentSeat] > 0 && Math.random() < 0.35) {
+        setTimeout(() => botGuess(), 600);
+      }
+    }
+
+    function botGuess() {
+      if (!gameStarted || currentSeat === activeSeat) return;
+      const seat = currentSeat;
+      const options = buildGuessOptions(seat);
+      const secret = assignedCharacters[seat - 1];
+      const guessCorrect = Math.random() < 0.4;
+      const chosen = guessCorrect ? secret : options.find(c => c.id !== secret.id);
+      if (chosen.id === secret.id) {
+        handleWin(seat);
+      } else {
+        handleWrongGuess(seat);
+      }
+    }
+
+    function buildGuessOptions(seat) {
+      const remaining = remainingIdsPerSeat[seat];
+      const secretId = assignedCharacters[seat - 1].id;
+      const base = remaining.includes(secretId) ? remaining : [secretId];
+      const pool = [...base];
+      while (pool.length < 4) {
+        const randomChar = assignedCharacters[Math.floor(Math.random() * assignedCharacters.length)];
+        if (!pool.includes(randomChar.id)) pool.push(randomChar.id);
+      }
+      const objs = pool.map(id => assignedCharacters.find(c => c.id === id));
+      return shuffle(objs);
+    }
+
+    function handleGuessClick() {
+      if (!gameStarted || currentSeat !== activeSeat || yesStreakForSeat[activeSeat] === 0) return;
+      const options = buildGuessOptions(activeSeat);
+      showGuessOptions(options);
+    }
+
+    function showGuessOptions(options) {
+      guessOptionsEl.innerHTML = '';
+      guessOptionsEl.style.display = 'flex';
+      options.forEach(char => {
+        const btn = document.createElement('button');
+        btn.className = 'guess-option-btn';
+        btn.textContent = char.name;
+        btn.addEventListener('click', () => handleGuessChoice(char));
+        guessOptionsEl.appendChild(btn);
+      });
+    }
+
+    function handleGuessChoice(chosenChar) {
+      const secret = assignedCharacters[activeSeat - 1];
+      guessOptionsEl.style.display = 'none';
+      if (secret.id === chosenChar.id) {
+        handleWin(activeSeat);
+      } else {
+        handleWrongGuess(activeSeat);
+      }
+    }
+
+    function handleWrongGuess(seat) {
+      const seatEl = document.querySelector('.player-seat[data-seat="' + seat + '"]');
+      seatEl.classList.add('player-out');
+      showNotif('NO', 'no');
+      yesStreakForSeat[seat] = 0;
+      if (seat === activeSeat) updateGuessButton();
+      passTurn();
+    }
+
+    function handleWin(seat) {
+      fireworksEl.classList.add('show');
+      const prize = 0.05;
+      winAmountEl.textContent = '+' + prize.toFixed(2) + ' AVAX';
+      winOverlay.classList.add('show');
+      showNotif('YOU WON!', 'win');
+      gameStarted = false;
+    }
+
+    function handleExit() {
+      window.location.reload();
+    }
+
+    startBtn.addEventListener('click', handleStart);
+    guessBtn.addEventListener('click', handleGuessClick);
+    exitBtn.addEventListener('click', handleExit);
+    walletConnectBtn.addEventListener('click', connectWallet);
+
+    loadCharacters();
+  </script>
+</body>
+</html>
