@@ -1,331 +1,833 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guess Who on Avalanche - Fuji Testnet</title>
-    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            min-height: 100vh;
-            padding: 20px;
-        }
-        .container { max-width: 1200px; margin: 0 auto; }
-        h1 { text-align: center; margin-bottom: 30px; font-size: 2.5em; }
-        button { 
-            padding: 15px 30px; 
-            font-size: 1.1em; 
-            background: #E84142; 
-            color: white; 
-            border: none; 
-            border-radius: 8px; 
-            cursor: pointer; 
-            margin: 10px; 
-            transition: all 0.3s;
-        }
-        button:hover { background: #c8102e; transform: translateY(-2px); }
-        button:disabled { background: #666; cursor: not-allowed; transform: none; }
-        #account { color: #4ade80; margin: 20px 0; text-align: center; font-size: 1.1em; }
-        .lobby { 
-            display: flex; justify-content: center; 
-            font-size: 4em; 
-            margin: 50px 0; 
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-        }
-        #gameBoard { text-align: center; }
-        #stats { font-weight: bold; font-size: 1.5em; margin: 20px 0; }
-        .board { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
-            gap: 15px; 
-            margin: 30px 0; 
-        }
-        .character { 
-            cursor: pointer; 
-            padding: 20px; 
-            border: 2px solid #ccc; 
-            border-radius: 12px; 
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
-            transition: all 0.3s;
-        }
-        .character:hover { transform: scale(1.05); border-color: #E84142; }
-        .character.eliminated { 
-            opacity: 0.3; 
-            text-decoration: line-through; 
-            cursor: default;
-            transform: none;
-        }
-        .character.secret-highlight { 
-            border-color: #E84142; 
-            background: rgba(232,65,66,0.2) !important;
-            box-shadow: 0 0 20px rgba(232,65,66,0.5);
-        }
-        .character-emoji { font-size: 3em; margin-bottom: 10px; }
-        .character-name { font-size: 1.1em; font-weight: bold; }
-        .question-section { 
-            background: rgba(0,0,0,0.3); 
-            padding: 30px; 
-            border-radius: 15px; 
-            margin: 30px 0;
-        }
-        .question-section.hidden { display: none; }
-        #currentQuestion { 
-            font-size: 1.5em; 
-            margin-bottom: 30px; 
-            font-weight: bold;
-            min-height: 50px;
-        }
-        .pulse { animation: pulse 1s infinite; }
-        @keyframes pulse { 
-            0%, 100% { transform: scale(1); } 
-            50% { transform: scale(1.05); } 
-        }
-        .secret-info { 
-            background: rgba(255,255,255,0.1); 
-            padding: 20px; 
-            border-radius: 12px; 
-            margin: 20px 0;
-            font-size: 1.2em;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Guess Who on Avalanche</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      background: radial-gradient(circle at top, #ffb347 0%, #1b0b2f 45%, #050111 100%);
+      color: #fdfdfd;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+    .app {
+      width: 100%;
+      max-width: 1400px;
+      padding: 24px 16px 40px;
+    }
+    .top-bar {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .top-btn {
+      display: block;
+      padding: 8px 16px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.4);
+      background: rgba(0,0,0,0.35);
+      color: #ffd978;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .top-btn:hover {
+      background: rgba(0,0,0,0.7);
+      transform: translateY(-1px);
+    }
+    .header-logo {
+      display: flex;
+      justify-content: center;
+      margin: 4px 0 16px;
+    }
+    .logo-badge {
+      padding: 10px 24px;
+      border-radius: 999px;
+      background: linear-gradient(145deg,#ffb347,#ffcc33);
+      color:#3b0b20;
+      font-weight: 900;
+      font-size: 1.4rem;
+      letter-spacing: 0.08em;
+      text-shadow: 0 2px 2px rgba(0,0,0,0.4);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+    }
+    .logo-badge span {
+      font-size: 1.6rem;
+    }
+    .main-card {
+      margin: 0 auto;
+      max-width: 1200px;
+      background: radial-gradient(circle at top, rgba(255,180,50,0.20), rgba(10,0,20,0.95));
+      border-radius: 24px;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.8);
+      padding: 24px 24px 32px;
+      position: relative;
+      overflow: hidden;
+    }
+    .main-card::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background-image: radial-gradient(circle at 10% 20%, rgba(255,255,255,0.12) 0, transparent 40%), radial-gradient(circle at 80% 10%, rgba(255,200,100,0.16) 0, transparent 55%);
+      opacity: 0.5;
+      pointer-events: none;
+    }
+    .main-inner {
+      position: relative;
+      z-index: 1;
+    }
+    .center-start {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+    .start-btn {
+      padding: 18px 64px;
+      border-radius: 999px;
+      border: none;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #3b0b20;
+      background: radial-gradient(circle at 30% 20%, #fff6c4 0, #ffb347 35%, #ff7b37 100%);
+      box-shadow: 0 14px 35px rgba(0,0,0,0.7);
+      cursor: pointer;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+    .start-btn span {
+      position: relative;
+      z-index: 1;
+    }
+    .start-btn::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 10% 0, rgba(255,255,255,0.6), transparent 45%);
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    .start-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 40px rgba(0,0,0,0.9);
+    }
+    .start-btn:hover::after {
+      opacity: 1;
+    }
+    .fee-note {
+      font-size: 0.95rem;
+      color: #ffd8a6;
+      opacity: 0.9;
+    }
+    .exit-btn {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.4);
+      background: rgba(255,255,255,0.06);
+      color: #ddd;
+      font-size: 0.8rem;
+      cursor: pointer;
+      z-index: 3;
+    }
+    .exit-btn:hover { background: rgba(255,255,255,0.15); }
+    .table-wrapper {
+      margin-top: 18px;
+      perspective: 1600px;
+    }
+    .table {
+      position: relative;
+      width: 100%;
+      margin: 0 auto;
+      max-width: 1000px;
+      height: 320px;
+      background: radial-gradient(circle at 50% 0, #3c1b37 0, #05040a 40%, #000 100%);
+      border-radius: 50% / 40%;
+      transform: rotateX(52deg);
+      box-shadow: 0 26px 60px rgba(0,0,0,0.9);
+      overflow: visible;
+      border: 4px solid rgba(255,180,70,0.4);
+    }
+    .table-logo {
+      position: absolute;
+      top: 47%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 2.6rem;
+      font-weight: 900;
+      letter-spacing: 0.18em;
+      color: rgba(255,60,60,0.08);
+      text-transform: uppercase;
+    }
+    .player-seat {
+      position: absolute;
+      width: 18%;
+      height: 130px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transform-style: preserve-3d;
+    }
+    .player-body {
+      width: 82px;
+      height: 82px;
+      border-radius: 50%;
+      background: linear-gradient(145deg,#ff9966,#ff5e62);
+      box-shadow: 0 10px 22px rgba(0,0,0,0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .player-number {
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: #fffaf0;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+    }
+    .player-card {
+      position: absolute;
+      bottom: 68px;
+      width: 90px;
+      height: 120px;
+      border-radius: 10px;
+      background: linear-gradient(145deg,#ffcc33,#ff7b37);
+      box-shadow: 0 10px 22px rgba(0,0,0,0.9);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 6px;
+      transform-origin: center bottom;
+      transform: translateZ(20px);
+    }
+    .player-card-inner {
+      width: 100%;
+      height: 100%;
+      border-radius: 8px;
+      background: #22041d;
+      color: #fff;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 6px;
+      font-size: 0.7rem;
+      text-align: center;
+    }
+    .player-name-hidden .player-card-inner {
+      background: repeating-linear-gradient(
+        45deg,
+        #b33b3b,
+        #b33b3b 8px,
+        #f7cfbf 8px,
+        #f7cfbf 16px
+      );
+      color: transparent;
+    }
+    .player-out {
+      filter: grayscale(0.92) brightness(0.35);
+    }
+    .player-out .player-card {
+      box-shadow: none;
+    }
+    .player-out .player-card-inner {
+      background: #050308;
+    }
+    .seat-1 { top: 68%; left: 9%; }
+    .seat-2 { top: 31%; left: 22%; }
+    .seat-3 { top: 14%; left: 45%; }
+    .seat-4 { top: 31%; left: 68%; }
+    .seat-5 { top: 68%; left: 81%; }
+    .seat-6 { top: 86%; left: 45%; }
+
+    .turn-badge {
+      position: absolute;
+      bottom: -36px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      background: #ffb347;
+      color: #3b0b20;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .question-panel {
+      margin-top: 26px;
+      display: grid;
+      grid-template-columns: 3fr 1.5fr;
+      gap: 18px;
+      align-items: center;
+    }
+    .qa-left, .qa-right {
+      position: relative;
+      z-index: 1;
+    }
+    .question-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    .question-btn {
+      width: 100%;
+      text-align: left;
+      padding: 12px 18px;
+      border-radius: 999px;
+      border: 2px solid #f5d677;
+      background: radial-gradient(circle at 0 0,#443366 0,#170b2a 65%);
+      color: #fff4e6;
+      font-size: 0.95rem;
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.8);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.18s ease;
+    }
+    .question-btn span.label {
+      position: relative;
+      z-index: 1;
+    }
+    .question-btn::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 0 0,rgba(255,255,255,0.3),transparent 55%);
+      opacity: 0;
+      transition: opacity 0.18s ease;
+    }
+    .question-btn:hover { transform: translateY(-1px); }
+    .question-btn:hover::after { opacity: 1; }
+    .question-btn.correct {
+      background: radial-gradient(circle at 0 0,#1f7a3c 0,#0b2512 70%);
+      border-color: #7fff9c;
+    }
+    .question-btn.wrong {
+      background: radial-gradient(circle at 0 0,#7a1f1f 0,#250b0b 70%);
+      border-color: #ff9c9c;
+      animation: flash-red 0.7s ease;
+    }
+    @keyframes flash-red {
+      0%,100% { box-shadow: 0 0 0 rgba(255,0,0,0); }
+      40% { box-shadow: 0 0 16px rgba(255,40,40,0.9); }
+    }
+
+    .guess-panel {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+    .guess-main-btn {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      border: 4px solid #ffd65a;
+      background: radial-gradient(circle at 30% 20%,#ffe9c9 0,#ff2f2f 40%,#850606 100%);
+      color: #fff;
+      font-weight: 900;
+      font-size: 1rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.7);
+      box-shadow: 0 18px 45px rgba(0,0,0,0.9);
+      cursor: pointer;
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+    .guess-main-btn:hover {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 24px 55px rgba(0,0,0,1);
+    }
+    .guess-main-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+    .guess-note { font-size: 0.8rem; color:#ffe0b3; text-align:center; max-width: 220px; }
+
+    .notification {
+      position: fixed;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 10px 20px;
+      border-radius: 999px;
+      background: rgba(0,0,0,0.85);
+      color:#fff;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 999;
+    }
+    .notification.show { animation: popFade 1.2s ease forwards; }
+    .notification.yes { background: rgba(40,150,80,0.92); }
+    .notification.no { background: rgba(190,40,40,0.92); }
+    .notification.win { background: rgba(255,180,40,0.95); color:#3b0b20; }
+    @keyframes popFade {
+      0% { opacity:0; transform:translate(-50%,-10px) scale(0.9); }
+      10% { opacity:1; transform:translate(-50%,0) scale(1); }
+      80% { opacity:1; }
+      100% { opacity:0; transform:translate(-50%,0) scale(1); }
+    }
+
+    .guess-options {
+      margin-top: 14px;
+      display: none;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .guess-option-btn {
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 2px solid #ffd876;
+      background: rgba(0,0,0,0.6);
+      color:#fff;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+    .guess-option-btn:hover {
+      background: rgba(255,255,255,0.12);
+      transform: translateY(-1px);
+    }
+
+    .fireworks {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,0.8) 0, transparent 35%),
+        radial-gradient(circle at 80% 30%, rgba(255,220,150,0.8) 0, transparent 40%),
+        radial-gradient(circle at 30% 70%, rgba(255,80,80,0.8) 0, transparent 45%);
+      opacity: 0;
+      z-index: 900;
+    }
+    .fireworks.show { animation: fwFade 1.8s ease-out forwards; }
+    @keyframes fwFade {
+      0% { opacity:0; }
+      20% { opacity:1; }
+      60% { opacity:1; }
+      100% { opacity:0; }
+    }
+
+    .win-overlay {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      pointer-events: none;
+      z-index: 901;
+      opacity: 0;
+    }
+    .win-overlay.show {
+      pointer-events: auto;
+      animation: winPop 1.4s ease forwards;
+    }
+    @keyframes winPop {
+      0% { opacity:0; transform:scale(0.8); }
+      25% { opacity:1; transform:scale(1.05); }
+      60% { transform:scale(1); }
+      100% { opacity:1; transform:scale(1); }
+    }
+    .win-card {
+      padding: 28px 36px;
+      border-radius: 20px;
+      background: radial-gradient(circle at top,#fff6c4,#ffc857,#ff7b37);
+      color:#3b0b20;
+      text-align: center;
+      box-shadow: 0 22px 55px rgba(0,0,0,0.9);
+    }
+    .win-title {
+      font-weight: 900;
+      font-size: 2rem;
+      margin-bottom: 10px;
+      letter-spacing: 0.12em;
+    }
+    .win-amount {
+      font-size: 1.3rem;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+    .win-sub {
+      font-size: 0.9rem;
+    }
+    .sub-message {
+      margin-top: 12px;
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🧑‍🤝‍🧑 Guess Who on Avalanche</h1>
-        
-        <button id="connect">Connect MetaMask</button>
-        <div id="account"></div>
-        
-        <button id="joinGame" style="display:none;">Join Game (0.01 AVAX)</button>
-        <div id="lobby" class="lobby" style="display:none;">0/6 players</div>
-        
-        <div id="gameBoard" style="display:none;">
-            <div class="secret-info">
-                <h2>Your Secret Character: <span id="secretChar">?</span></h2>
-                <div id="stats">25 characters remaining</div>
-            </div>
-            
-            <div class="board" id="board"></div>
-            
-            <button id="nextQuestionBtn">Ask Next Question</button>
-            
-            <div id="questionSection" class="question-section hidden">
-                <div id="currentQuestion"></div>
-                <button id="answerYes">Yes 👍</button>
-                <button id="answerNo">No 👎</button>
-            </div>
-            
-            <button id="guessBtn" class="pulse">Guess My Character</button>
-        </div>
+  <div class="notification" id="notif"></div>
+  <div class="fireworks" id="fireworks"></div>
+  <div class="win-overlay" id="winOverlay">
+    <div class="win-card">
+      <div class="win-title">YOU WON!</div>
+      <div class="win-amount" id="winAmount">+0.00 AVAX</div>
+      <div class="win-sub">Prize sent to your wallet</div>
+      <div class="sub-message">Sorry, try another round! for other players</div>
+    </div>
+  </div>
+
+  <div class="app">
+    <div class="top-bar">
+      <button class="top-btn">Profile</button>
+      <button class="top-btn">Settings</button>
+      <button class="top-btn" id="walletConnect">Wallet connect</button>
     </div>
 
-    <script>
-        const QUESTIONS = [
-            { id: 'gender', attr: 'gender', text: 'Am I a man?' },
-            { id: 'age_20_35', attr: 'age_20_35', text: 'Am I between 20 and 35 years old?' },
-            { id: 'age_36_50', attr: 'age_36_50', text: 'Am I between 36 and 50 years old?' },
-            { id: 'age_51_plus', attr: 'age_51_plus', text: 'Am I older than 50?' },
-            { id: 'alive2026', attr: 'alive2026', text: 'Am I alive in 2026?' },
-            { id: 'rock', attr: 'rock', text: 'Do I sing rock music?' },
-            { id: 'pop', attr: 'pop', text: 'Do I sing pop music?' },
-            { id: 'rap', attr: 'rap', text: 'Do I perform rap or hip-hop?' },
-            { id: 'american', attr: 'american', text: 'Am I American?' },
-            { id: 'british', attr: 'british', text: 'Am I British?' },
-            { id: 'guitarist', attr: 'guitarist', text: 'Do I play guitar on stage?' },
-            { id: 'pianist', attr: 'pianist', text: 'Do I play piano or keyboards?' },
-            { id: 'beard', attr: 'beard', text: 'Do I have a beard?' },
-            { id: 'glasses', attr: 'glasses', text: 'Do I wear glasses?' }
-        ];
+    <div class="header-logo">
+      <div class="logo-badge"><span>GUESS WHO?</span></div>
+    </div>
 
-        let characters = [];
-        let remainingIds = [];
-        let askedQuestions = [];
-        let currentQuestion = null;
-        let mySecretCharacterId = null;
-        let web3, account;
+    <div class="main-card">
+      <button class="exit-btn" id="exitBtn">Exit Game</button>
 
-        const elements = {
-            connectBtn: document.getElementById('connect'),
-            accountEl: document.getElementById('account'),
-            joinBtn: document.getElementById('joinGame'),
-            lobbyEl: document.getElementById('lobby'),
-            gameBoardEl: document.getElementById('gameBoard'),
-            secretCharEl: document.getElementById('secretChar'),
-            boardEl: document.getElementById('board'),
-            questionEl: document.getElementById('currentQuestion'),
-            questionSection: document.getElementById('questionSection'),
-            answerYes: document.getElementById('answerYes'),
-            answerNo: document.getElementById('answerNo'),
-            guessBtn: document.getElementById('guessBtn'),
-            statsEl: document.getElementById('stats'),
-            nextQuestionBtn: document.getElementById('nextQuestionBtn')
-        };
+      <div class="main-inner">
+        <div class="center-start">
+          <button class="start-btn" id="startGame"><span>START THE GAME</span></button>
+          <div class="fee-note">Entry fee: 0.01 AVAX on Avalanche Fuji testnet</div>
+        </div>
 
-        document.addEventListener('DOMContentLoaded', function() {
-            bindEvents();
-            loadCharacters();
-        });
+        <div class="table-wrapper">
+          <div class="table" id="table">
+            <div class="table-logo">Avalanche</div>
+            <div class="player-seat seat-1" data-seat="1">
+              <div class="player-card"><div class="player-card-inner" id="cardName1">–</div></div>
+              <div class="player-body"><div class="player-number">1</div></div>
+            </div>
+            <div class="player-seat seat-2" data-seat="2">
+              <div class="player-card"><div class="player-card-inner" id="cardName2">–</div></div>
+              <div class="player-body"><div class="player-number">2</div></div>
+            </div>
+            <div class="player-seat seat-3" data-seat="3">
+              <div class="player-card"><div class="player-card-inner" id="cardName3">–</div></div>
+              <div class="player-body"><div class="player-number">3</div></div>
+            </div>
+            <div class="player-seat seat-4" data-seat="4">
+              <div class="player-card"><div class="player-card-inner" id="cardName4">–</div></div>
+              <div class="player-body"><div class="player-number">4</div></div>
+            </div>
+            <div class="player-seat seat-5" data-seat="5">
+              <div class="player-card"><div class="player-card-inner" id="cardName5">–</div></div>
+              <div class="player-body"><div class="player-number">5</div></div>
+            </div>
+            <div class="player-seat seat-6" data-seat="6">
+              <div class="player-card"><div class="player-card-inner" id="cardName6">–</div></div>
+              <div class="player-body"><div class="player-number">6</div></div>
+            </div>
+          </div>
+        </div>
 
-        function bindEvents() {
-            elements.connectBtn.onclick = connectWallet;
-            elements.joinBtn.onclick = joinGame;
-            elements.answerYes.onclick = () => applyAnswer(true);
-            elements.answerNo.onclick = () => applyAnswer(false);
-            elements.guessBtn.onclick = guessCharacter;
-            elements.nextQuestionBtn.onclick = showQuestion;
+        <div class="question-panel">
+          <div class="qa-left">
+            <div class="question-grid" id="questionGrid"></div>
+          </div>
+          <div class="qa-right">
+            <button class="guess-main-btn" id="guessBtn" disabled>GUESS WHO?</button>
+            <div class="guess-note">
+              Available only on your turn and after at least one YES answer.
+            </div>
+            <div class="guess-options" id="guessOptions"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const QUESTION_POOL = [
+      { id: 'gender', attr: 'gender', text: 'Am I a man?' },
+      { id: 'age_20_35', attr: 'age_20_35', text: 'Am I between 20 and 35 years old?' },
+      { id: 'age_36_50', attr: 'age_36_50', text: 'Am I between 36 and 50 years old?' },
+      { id: 'age_51_plus', attr: 'age_51_plus', text: 'Am I older than 50?' },
+      { id: 'alive2026', attr: 'alive2026', text: 'Am I alive in 2026?' },
+      { id: 'rock', attr: 'rock', text: 'Do I sing rock music?' },
+      { id: 'pop', attr: 'pop', text: 'Do I sing pop music?' },
+      { id: 'rap', attr: 'rap', text: 'Do I perform rap or hip-hop?' },
+      { id: 'american', attr: 'american', text: 'Am I American?' },
+      { id: 'british', attr: 'british', text: 'Am I British?' },
+      { id: 'guitarist', attr: 'guitarist', text: 'Do I play guitar on stage?' },
+      { id: 'pianist', attr: 'pianist', text: 'Do I play piano or keyboards?' },
+      { id: 'beard', attr: 'beard', text: 'Do I have a beard?' },
+      { id: 'glasses', attr: 'glasses', text: 'Do I wear glasses?' }
+    ];
+
+    let characters = [];
+    let assignedCharacters = []; 
+    let currentPlayer = null;
+    let activeSeat = 1;
+    let askedQuestionIds = new Set();
+    let yesStreak = 0;
+    let remainingIdsPerPlayer = {};
+    let gameStarted = false;
+
+    const notifEl = document.getElementById('notif');
+    const startBtn = document.getElementById('startGame');
+    const guessBtn = document.getElementById('guessBtn');
+    const questionGrid = document.getElementById('questionGrid');
+    const exitBtn = document.getElementById('exitBtn');
+    const guessOptionsEl = document.getElementById('guessOptions');
+    const fireworksEl = document.getElementById('fireworks');
+    const winOverlay = document.getElementById('winOverlay');
+    const winAmountEl = document.getElementById('winAmount');
+
+    async function loadCharacters() {
+      try {
+        const res = await fetch('characters_25.json');
+        characters = await res.json();
+      } catch (e) {
+        console.error('characters_25.json missing or invalid', e);
+      }
+    }
+
+    function showNotif(message, type = '') {
+      notifEl.textContent = message;
+      notifEl.className = 'notification';
+      if (type) notifEl.classList.add(type);
+      requestAnimationFrame(() => {
+        notifEl.classList.add('show');
+        setTimeout(() => notifEl.classList.remove('show'), 1000);
+      });
+    }
+
+    function randomSample(array, count, excludeIds = []) {
+      const pool = array.filter(q => !excludeIds.includes(q.id));
+      const copy = [...pool];
+      const res = [];
+      while (copy.length && res.length < count) {
+        const idx = Math.floor(Math.random() * copy.length);
+        res.push(copy.splice(idx, 1)[0]);
+      }
+      return res;
+    }
+
+    async function handleStart() {
+      if (!characters.length) await loadCharacters();
+      showPayModal();
+    }
+
+    function showPayModal() {
+      const confirmed = confirm('Pay 0.01 AVAX to join the game?');
+      if (!confirmed) return;
+      // Here you will call smart contract: joinGame() with 0.01 AVAX
+      // After tx success:
+      initGameState();
+    }
+
+    function initGameState() {
+      gameStarted = true;
+      yesStreak = 0;
+      askedQuestionIds.clear();
+      assignedCharacters = [];
+      remainingIdsPerPlayer = {};
+      guessOptionsEl.style.display = 'none';
+      guessOptionsEl.innerHTML = '';
+      winOverlay.classList.remove('show');
+      fireworksEl.classList.remove('show');
+
+      const playersCount = 6;
+      const shuffled = [...characters].sort(() => Math.random() - 0.5);
+      assignedCharacters = shuffled.slice(0, playersCount);
+
+      for (let seat = 1; seat <= playersCount; seat++) {
+        const char = assignedCharacters[seat - 1];
+        const label = document.getElementById('cardName' + seat);
+        label.textContent = char.name;
+        const seatEl = document.querySelector('.player-seat[data-seat="' + seat + '"]');
+        seatEl.classList.remove('player-out');
+        seatEl.classList.remove('player-name-hidden');
+        seatEl.querySelectorAll('.turn-badge').forEach(b => b.remove());
+        remainingIdsPerPlayer[seat] = assignedCharacters.map(c => c.id);
+      }
+
+      activeSeat = Math.floor(Math.random() * 6) + 1;
+      currentPlayer = activeSeat;
+      const activeSeatEl = document.querySelector('.player-seat[data-seat="' + activeSeat + '"]');
+      activeSeatEl.classList.add('player-name-hidden');
+      setTurnBadge(activeSeat);
+      showDiceAnimation(activeSeat);
+      renderQuestionsForCurrent();
+      guessBtn.disabled = true;
+    }
+
+    function setTurnBadge(seatNumber) {
+      document.querySelectorAll('.turn-badge').forEach(b => b.remove());
+      const seatEl = document.querySelector('.player-seat[data-seat="' + seatNumber + '"]');
+      const badge = document.createElement('div');
+      badge.className = 'turn-badge';
+      badge.textContent = 'Your turn';
+      seatEl.appendChild(badge);
+    }
+
+    function showDiceAnimation(seatNumber) {
+      showNotif('Player ' + seatNumber + ' starts', 'yes');
+    }
+
+    function renderQuestionsForCurrent() {
+      questionGrid.innerHTML = '';
+      const usedIds = Array.from(askedQuestionIds);
+      const roundQuestions = randomSample(QUESTION_POOL, 4, usedIds);
+      roundQuestions.forEach(q => {
+        const btn = document.createElement('button');
+        btn.className = 'question-btn';
+        btn.dataset.qid = q.id;
+        btn.dataset.attr = q.attr;
+        btn.innerHTML = '<span class="label">' + q.text + '</span>';
+        btn.addEventListener('click', () => handleQuestionClick(btn, q));
+        questionGrid.appendChild(btn);
+      });
+    }
+
+    function handleQuestionClick(btn, question) {
+      if (!gameStarted || currentPlayer !== activeSeat) return;
+      const playerChar = assignedCharacters[activeSeat - 1];
+      const v = playerChar[question.attr];
+
+      const isYes = v === 1;
+      if (v === 2) {
+        showNotif('Unknown', 'no');
+        btn.classList.add('wrong');
+        askedQuestionIds.add(question.id);
+        passTurn();
+        return;
+      }
+
+      askedQuestionIds.add(question.id);
+      if (isYes) {
+        btn.classList.add('correct');
+        showNotif('YES', 'yes');
+        yesStreak++;
+        filterRemainingForPlayer(activeSeat, question.attr, true);
+        guessBtn.disabled = yesStreak === 0;
+        setTimeout(renderQuestionsForCurrent, 700);
+      } else {
+        btn.classList.add('wrong');
+        showNotif('NO', 'no');
+        filterRemainingForPlayer(activeSeat, question.attr, false);
+        yesStreak = 0;
+        guessBtn.disabled = true;
+        passTurn();
+      }
+    }
+
+    function filterRemainingForPlayer(seat, attr, answerYes) {
+      const remaining = remainingIdsPerPlayer[seat];
+      remainingIdsPerPlayer[seat] = remaining.filter(id => {
+        const char = assignedCharacters.find(c => c.id === id);
+        const v = char[attr];
+        if (v === 2) return true;
+        return answerYes ? v === 1 : v === 0;
+      });
+    }
+
+    function passTurn() {
+      const prevSeat = activeSeat;
+      let nextSeat = prevSeat;
+      for (let i = 0; i < 6; i++) {
+        nextSeat = ((nextSeat) % 6) + 1;
+        const seatEl = document.querySelector('.player-seat[data-seat="' + nextSeat + '"]');
+        if (!seatEl.classList.contains('player-out')) {
+          activeSeat = nextSeat;
+          currentPlayer = activeSeat;
+          break;
         }
+      }
+      setTurnBadge(activeSeat);
+      renderQuestionsForCurrent();
+    }
 
-        async function loadCharacters() {
-            try {
-                const response = await fetch('characters_25.json');
-                characters = await response.json();
-                remainingIds = characters.map(c => c.id);
-            } catch (error) {
-                console.error('Failed to load characters:', error);
-                alert('Please add characters_25.json file');
-            }
-        }
+    function handleGuessClick() {
+      if (!gameStarted || currentPlayer !== activeSeat || yesStreak === 0) return;
+      const options = buildGuessOptions();
+      showGuessOptions(options);
+    }
 
-        async function connectWallet() {
-            if (typeof window.ethereum !== 'undefined') {
-                try {
-                    await window.ethereum.request({ method: 'eth_requestAccounts' });
-                    web3 = new Web3(window.ethereum);
-                    const accounts = await web3.eth.getAccounts();
-                    account = accounts[0];
-                    
-                    elements.accountEl.textContent = `Connected: ${account.slice(0,6)}...${account.slice(-4)}`;
-                    elements.connectBtn.style.display = 'none';
-                    elements.joinBtn.style.display = 'block';
-                } catch (error) {
-                    console.error('Wallet connection failed:', error);
-                }
-            } else {
-                alert('Please install MetaMask!');
-            }
-        }
+    function buildGuessOptions() {
+      const remaining = remainingIdsPerPlayer[activeSeat];
+      const secretId = assignedCharacters[activeSeat - 1].id;
+      const base = remaining.includes(secretId) ? remaining : [secretId];
+      const pool = [...base];
+      while (pool.length < 4) {
+        const randomChar = assignedCharacters[Math.floor(Math.random() * assignedCharacters.length)];
+        if (!pool.includes(randomChar.id)) pool.push(randomChar.id);
+      }
+      const_objs = pool.map(id => assignedCharacters.find(c => c.id === id));
+      return _shuffle(const_objs);
+    }
 
-        async function joinGame() {
-            if (!account) return;
-            
-            elements.joinBtn.disabled = true;
-            elements.joinBtn.textContent = 'Joining...';
-            
-            setTimeout(() => {
-                mySecretCharacterId = Math.floor(Math.random() * 25);
-                elements.lobbyEl.style.display = 'none';
-                elements.gameBoardEl.style.display = 'block';
-                updateUI();
-                renderBoard();
-            }, 2000);
-        }
+    function _shuffle(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
 
-        function applyAnswer(answerYes) {
-            if (!currentQuestion) return;
-            
-            remainingIds = remainingIds.filter(id => {
-                const value = characters[id][currentQuestion.attr];
-                if (value === 2) return true;
-                return answerYes ? (value === 1) : (value === 0);
-            });
-            
-            elements.questionSection.classList.add('hidden');
-            askedQuestions.push(currentQuestion.id);
-            currentQuestion = null;
-            renderBoard();
-            updateUI();
-        }
+    function showGuessOptions(options) {
+      guessOptionsEl.innerHTML = '';
+      guessOptionsEl.style.display = 'flex';
+      options.forEach(char => {
+        const btn = document.createElement('button');
+        btn.className = 'guess-option-btn';
+        btn.textContent = char.name;
+        btn.addEventListener('click', () => handleGuessChoice(char));
+        guessOptionsEl.appendChild(btn);
+      });
+    }
 
-        function pickNextQuestion() {
-            const available = QUESTIONS.filter(q => !askedQuestions.includes(q.id));
-            if (available.length === 0) return null;
-            const question = available[Math.floor(Math.random() * available.length)];
-            askedQuestions.push(question.id);
-            return question;
-        }
+    function handleGuessChoice(chosenChar) {
+      const secret = assignedCharacters[activeSeat - 1];
+      guessOptionsEl.style.display = 'none';
+      if (secret.id === chosenChar.id) {
+        handleWin();
+      } else {
+        handleWrongGuess();
+      }
+    }
 
-        function showQuestion() {
-            currentQuestion = pickNextQuestion();
-            if (currentQuestion && elements.questionEl) {
-                elements.questionEl.textContent = currentQuestion.text;
-                elements.questionSection.classList.remove('hidden');
-            }
-        }
+    function handleWrongGuess() {
+      const seatEl = document.querySelector('.player-seat[data-seat="' + activeSeat + '"]');
+      seatEl.classList.add('player-out');
+      showNotif('NO', 'no');
+      yesStreak = 0;
+      guessBtn.disabled = true;
+      passTurn();
+    }
 
-        function guessCharacter() {
-            if (!mySecretCharacterId || !remainingIds.includes(mySecretCharacterId)) {
-                alert('Wrong guess! Try again.');
-                return;
-            }
-            showWin();
-        }
+    function handleWin() {
+      fireworksEl.classList.add('show');
+      const prize = 0.05; // demo value; will be from contract
+      winAmountEl.textContent = '+' + prize.toFixed(2) + ' AVAX';
+      winOverlay.classList.add('show');
+      showNotif('YOU WON!', 'win');
+      gameStarted = false;
+    }
 
-        function showWin() {
-            alert('🎉 WINNER! You guessed correctly!');
-            resetGame();
-        }
+    function handleExit() {
+      window.location.reload();
+    }
 
-        function resetGame() {
-            remainingIds = characters.map(c => c.id);
-            askedQuestions = [];
-            currentQuestion = null;
-            renderBoard();
-            updateUI();
-        }
-
-        function renderBoard() {
-            const board = elements.boardEl;
-            board.innerHTML = '';
-            
-            characters.forEach(character => {
-                const div = document.createElement('div');
-                div.className = 'character';
-                div.dataset.id = character.id;
-                
-                if (!remainingIds.includes(character.id)) {
-                    div.classList.add('eliminated');
-                } else if (character.id === mySecretCharacterId) {
-                    div.classList.add('secret-highlight');
-                }
-                
-                div.innerHTML = `
-                    <div class="character-emoji">🎤</div>
-                    <div class="character-name">${character.name}</div>
-                `;
-                
-                div.addEventListener('click', () => {
-                    if (remainingIds.includes(character.id)) {
-                        guessCharacter();
-                    }
-                });
-                
-                board.appendChild(div);
-            });
-        }
-
-        function updateUI() {
-            const remainingCount = remainingIds.length;
-            
-            if (elements.statsEl) {
-                elements.statsEl.textContent = `${remainingCount} characters remaining`;
-            }
-            
-            if (elements.secretCharEl) {
-                const secretChar = characters.find(c => c.id === mySecretCharacterId);
-                elements.secretCharEl.textContent = secretChar ? secretChar.name : '?';
-            }
-            
-            if (remainingCount <= 3) {
-                elements.guessBtn.classList.add('pulse');
-            } else {
-                elements.guessBtn.classList.remove('pulse');
-            }
-        }
-    </script>
+    startBtn.addEventListener('click', handleStart);
+    guessBtn.addEventListener('click', handleGuessClick);
+    exitBtn.addEventListener('click', handleExit);
+  </script>
 </body>
 </html>
