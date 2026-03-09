@@ -467,7 +467,13 @@
 
     async function loadCharacters() {
       const res = await fetch('characters_25.json');
-      characters = await res.json();
+      if (!res.ok) throw new Error('JSON 404: ' + res.status);
+characters = await res.json();
+console.log('Loaded:', characters.length);
+} catch (e) {
+  console.error('JSON fail:', e);
+  showNotif('Characters not found: ' + e.message, 'no');
+	    }
     }
 
     function showNotif(message, type = '') {
@@ -743,26 +749,19 @@ let contract, currentGameId = null;
 
 
     
-    async function connectWallet() {
-         if (!window.ethereum) {
-    showNotif('Please install MetaMask', 'no');
-    return;
-  }
-      try {
-        const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
-        account = accounts[0];
-        showNotif('Wallet connected', 'yes');
-      } catch (e) {
-        console.error(e);
-        showNotif('Wallet rejected', 'no');
-      }
+     async function loadCharacters() {
+      const res = await fetch('characters_25.json');
+      characters = await res.json();
     }
 
-    async function handleStart() {
-      if (!characters.length) await loadCharacters();
-      if (window.ethereum && !account) {
-        await connectWallet();
-      }
+
+async function handleStart() {
+  console.log('Start clicked, characters.length:', characters.length);
+  if (!characters.length) {
+    console.log('Loading characters...');
+    await loadCharacters();
+    console.log('Loaded:', characters.length);
+  }
       const confirmed = confirm('Pay 0.01 AVAX entry fee to start?');
       if (!confirmed) return;
       // Here: smart contract call joinGame() with 0.01 AVAX
@@ -992,12 +991,12 @@ let contract, currentGameId = null;
     }
 
     function handleExit() { window.location.reload(); }
-
-    startBtn.addEventListener('click', handleStart);
-    guessBtn.addEventListener('click', handleGuessClick);
-    exitBtn.addEventListener('click', handleExit);
-    walletConnectBtn.addEventListener('click', connectWallet);
-
+   
+startBtn.addEventListener('click', handleStart);
+guessBtn.addEventListener('click', handleGuessClick);
+exitBtn.addEventListener('click', handleExit);
+walletConnectBtn.addEventListener('click', connectWallet);
+	  
     loadCharacters();
   </script>
 </body>
