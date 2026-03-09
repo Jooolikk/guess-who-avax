@@ -23,6 +23,8 @@ Multiplayer Guess Who where players get secret on-chain characters and compete t
 Coming in Week 1: playable lobby + prize payout.
 
 ## 🛠 Tech Stack
+The game uses VRF to select charactersSeed and firstPlayerIndex.
+The logic of questions/bots itself lives in the frontend, the contract is only escrow + payout.
 - Frontend: HTML/JS + Web3.js
 - Backend: Solidity + Chainlink VRF
 - Network: Avalanche Fuji/C-Chain
