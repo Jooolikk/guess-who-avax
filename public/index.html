@@ -764,7 +764,6 @@ function handleTurnTimeout() {
   if (currentSeat !== activeSeat && gameStarted) {
     setTimeout(botTurnStep, 4000);
   }
-}
 
     function botTurnStep() {
       if (!gameStarted || currentSeat === activeSeat) return;
