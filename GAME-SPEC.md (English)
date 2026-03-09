@@ -70,16 +70,7 @@ Winner:     80% = 0.048 AVAX (auto-transfer)
 Fee/Next:   20% = 0.012 AVAX
 
 
-## 6. WebSocket Events
-
-join: {player: "0x123...", slot: 1}
-characters_assigned: {gameId: 5, playerCharacters: } [walkabout](https://walkabout.games/application-form/)
-eliminate: {characters:, round: 2} [perplexity](https://www.perplexity.ai/search/327101ab-32cd-4fc3-8662-ffca363ebf0d)
-guess: {player: "0x123...", characterId: 47}
-winner: {player: "0x123...", prize: "0.048 AVAX"}
-
-
-## 7. Win Conditions & Edge Cases
+## 6. Win Conditions & Edge Cases
 
 **Win**: First player to name their exact secret ID
 **Tie**: 2+ simultaneous correct guesses → split prize
@@ -87,7 +78,7 @@ winner: {player: "0x123...", prize: "0.048 AVAX"}
 **Refunds**: <6 players after 30min → full entry refunds
 
 
-## 8. User Flow
+## 7. User Flow
 
 1. [Connect Wallet] → "0x1234... connected"
 2. [Join Game] → "Paid 0.01 AVAX. 5 players needed..."
@@ -98,8 +89,4 @@ winner: {player: "0x123...", prize: "0.048 AVAX"}
 7. [Guess #47] → ✅ "Winner! +0.048 AVAX received"
 
 
-## Board State Visualization
 
-Start:      [60 bright characters]  
-Round 2:    [24 bright + 36 grayed]  
-Final:      [3 bright + 57 grayed]  
