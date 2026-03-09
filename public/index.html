@@ -527,6 +527,7 @@
     }
 
     async function connectWallet() {
+      console.log('MetaMask?', window.ethereum);
       if (!window.ethereum) {
         alert('Please install MetaMask');
         return;
