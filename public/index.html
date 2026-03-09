@@ -747,8 +747,10 @@ let contract, currentGameId = null;
 
     
     async function connectWallet() {
-       if (!window.ethereum) return showNotif('Please install MetaMask', 'no');
-      }
+         if (!window.ethereum) {
+    showNotif('Please install MetaMask', 'no');
+    return;
+  }
       try {
         const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
         account = accounts[0];
