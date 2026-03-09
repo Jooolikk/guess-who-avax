@@ -21,14 +21,30 @@
       padding: 24px 16px 40px;
       position: relative;
     }
-    .top-bar {
+    .top-row {
       display: flex;
-      justify-content: flex-end;
-      gap: 10px;
+      justify-content: space-between;
+      align-items: center;
       margin-bottom: 16px;
     }
+    .exit-btn {
+      padding: 6px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.4);
+      background: rgba(255,255,255,0.08);
+      color: #ddd;
+      font-size: 0.8rem;
+      cursor: pointer;
+      box-shadow: 0 0 8px rgba(255,255,255,0.3);
+    }
+    .exit-btn:hover { background: rgba(255,255,255,0.18); }
+    .top-right {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      align-items: flex-end;
+    }
     .top-btn {
-      display: block;
       padding: 8px 16px;
       border-radius: 999px;
       border: 1px solid rgba(255,255,255,0.35);
@@ -44,10 +60,11 @@
       transform: translateY(-1px);
       box-shadow: 0 0 18px rgba(255,220,120,0.7);
     }
+
     .main-card {
       margin: 0 auto;
       max-width: 1200px;
-      background: radial-gradient(circle at top, #1a0f24 0, #050208 60%);
+      background: radial-gradient(circle at top, #15101d 0, #050208 60%);
       border-radius: 24px;
       box-shadow: 0 20px 45px rgba(0,0,0,0.85);
       padding: 24px 24px 30px;
@@ -55,136 +72,88 @@
       overflow: hidden;
     }
     .main-inner { position: relative; z-index: 1; }
-    .exit-btn {
-      position: absolute;
-      top: 16px;
-      left: 16px;
-      padding: 6px 14px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,0.4);
-      background: rgba(255,255,255,0.08);
-      color: #ddd;
-      font-size: 0.8rem;
-      cursor: pointer;
-      z-index: 3;
-      box-shadow: 0 0 8px rgba(255,255,255,0.3);
-    }
-    .exit-btn:hover { background: rgba(255,255,255,0.18); }
 
     .center-start {
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 16px;
+      justify-content: center;
       margin-bottom: 18px;
     }
     .start-btn {
-      padding: 26px 52px;
-      border-radius: 999px;
-      border: 3px solid #ffdf7a;
-      font-size: 1.2rem;
-      font-weight: 900;
-      color: #fff9e0;
-      background: radial-gradient(circle at 30% 20%, #fff6c4 0, #ffb347 40%, #ff7b37 100%);
-      box-shadow: 0 0 26px rgba(255,180,70,0.9);
+      width: 260px;
+      height: 90px;
+      border: none;
+      background: transparent url('start.png') center/contain no-repeat;
       cursor: pointer;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      position: relative;
-      overflow: hidden;
-      transition: transform 0.18s ease, box-shadow 0.18s ease;
-      text-align: center;
-      line-height: 1.1;
+      transition: transform 0.18s ease, filter 0.18s ease;
     }
-    .start-btn-line {
-      display: block;
-    }
-    .start-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 0 36px rgba(255,210,120,1);
-    }
+    .start-btn:hover { transform: scale(1.03); filter: brightness(1.1); }
 
     .table-wrapper {
-      margin-top: 10px;
       display: flex;
       justify-content: center;
+      margin-top: 6px;
+      margin-bottom: 26px;
     }
     .table {
       position: relative;
       width: 100%;
       max-width: 900px;
-      height: 320px;
-      background: radial-gradient(circle at 50% 15%, #2a1724 0, #0a050d 45%, #010005 100%);
-      border-radius: 50% / 50%;
-      box-shadow: 0 26px 60px rgba(0,0,0,0.9);
-      border: 4px solid rgba(255,180,70,0.5);
-      overflow: visible;
+      height: 360px;
+      background: url('table.png') center/contain no-repeat;
     }
-    .table-logo {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%) skew(-12deg);
-      font-size: 2.3rem;
-      font-weight: 800;
-      letter-spacing: 0.2em;
-      color: rgba(255,60,60,0.25);
-      text-transform: uppercase;
-    }
+
     .player-seat {
       position: absolute;
-      width: 17%;
-      height: 140px;
+      width: 140px;
+      height: 160px;
       display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .player-body {
-      width: 94px;
-      height: 94px;
-      border-radius: 50%;
-      background: linear-gradient(145deg,#ff9966,#ff5e62);
-      box-shadow: 0 16px 28px rgba(0,0,0,0.85);
-      display: flex;
-      align-items: center;
       justify-content: center;
-      position: relative;
-    }
-    .player-number {
-      font-size: 2.1rem;
-      font-weight: 900;
-      color: #fffaf0;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.6);
-    }
-    .player-card {
-      position: absolute;
-      bottom: 80px;
-      width: 96px;
-      height: 130px;
-      border-radius: 10px;
-      background: linear-gradient(145deg,#ffcc33,#ff7b37);
-      box-shadow: 0 10px 22px rgba(0,0,0,0.9);
-      display: flex;
       align-items: flex-end;
-      justify-content: center;
-      padding: 6px;
-      transform-origin: center bottom;
-      transform: translateY(-8px);
     }
-    .player-card-inner {
-      width: 100%;
-      height: 100%;
-      border-radius: 8px;
-      background: #22041d;
-      color: #fff;
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      padding: 6px;
+    /* tune these to match heads on table.png */
+    .seat-1 { bottom: 30px; left: 50%; transform: translateX(-50%); }
+    .seat-2 { top: 115px; left: 130px; }
+    .seat-3 { top: 70px; left: 330px; }
+    .seat-4 { top: 70px; right: 330px; }
+    .seat-5 { top: 115px; right: 130px; }
+    .seat-6 { bottom: 40px; left: 85px; }
+
+    .player-name-tag {
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(0,0,0,0.75);
+      border: 1px solid rgba(120,200,255,0.9);
       font-size: 0.7rem;
-      text-align: center;
+      white-space: nowrap;
+      position: relative;
+      color: #e9f5ff;
+      box-shadow:
+        0 0 4px rgba(0,150,255,0.9),
+        0 0 10px rgba(0,150,255,0.7),
+        0 0 18px rgba(0,150,255,0.5);
+      text-shadow: 0 0 6px rgba(0,150,255,0.9);
     }
-    .player-name-hidden .player-card-inner {
+    .player-seat.current-turn .player-name-tag {
+      box-shadow:
+        0 0 6px rgba(255,210,120,1),
+        0 0 14px rgba(255,190,80,0.9),
+        0 0 24px rgba(255,160,60,0.9);
+      border-color: rgba(255,220,140,1);
+      color: #fffdf5;
+      animation: neonPulse 1.3s ease-in-out infinite alternate;
+    }
+    @keyframes neonPulse {
+      0% {
+        transform: translateY(0);
+        text-shadow: 0 0 6px rgba(255,220,140,0.8);
+      }
+      100% {
+        transform: translateY(-1px);
+        text-shadow: 0 0 10px rgba(255,250,210,1);
+      }
+    }
+
+    .player-name-hidden .player-name-tag {
       background: repeating-linear-gradient(
         45deg,
         #b33b3b,
@@ -193,38 +162,16 @@
         #f7cfbf 16px
       );
       color: transparent;
+      border-color: rgba(255,255,255,0.1);
+      box-shadow: none;
+      text-shadow: none;
     }
     .player-out {
-      filter: grayscale(0.92) brightness(0.35);
-    }
-    .player-out .player-card {
-      box-shadow: none;
-    }
-    .player-out .player-card-inner {
-      background: #050308;
-    }
-
-    .seat-1 { top: 74%; left: 6%; }
-    .seat-2 { top: 36%; left: 22%; }
-    .seat-3 { top: 20%; left: 45%; }
-    .seat-4 { top: 36%; left: 68%; }
-    .seat-5 { top: 74%; left: 84%; }
-    .seat-6 { top: 88%; left: 45%; }
-
-    .turn-badge {
-      position: absolute;
-      bottom: -32px;
-      padding: 4px 12px;
-      border-radius: 999px;
-      background: #ffb347;
-      color: #3b0b20;
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
+      filter: grayscale(0.9) brightness(0.4);
     }
 
     .question-panel {
-      margin-top: 22px;
+      margin-top: 8px;
       display: grid;
       grid-template-columns: 3fr 1.5fr;
       gap: 18px;
@@ -233,40 +180,48 @@
     .question-grid {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 10px;
+      gap: 12px;
     }
     .question-btn {
+      position: relative;
       width: 100%;
-      text-align: left;
-      padding: 12px 18px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      padding: 8px 18px;
+    }
+    .question-btn-inner {
+      position: relative;
+      padding: 10px 18px;
       border-radius: 999px;
-      border: 2px solid #f5d677;
-      background: rgba(10,5,20,0.9);
       color: #fff4e6;
       font-size: 0.95rem;
-      cursor: pointer;
-      box-shadow: 0 0 18px rgba(245,214,119,0.35);
-      position: relative;
-      overflow: hidden;
-      transition: all 0.18s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      min-height: 38px;
+      background: url('blue.png') center/100% 100% no-repeat;
+      box-shadow: 0 0 16px rgba(90,150,255,0.6);
+      transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
     }
-    .question-btn span.label { position: relative; z-index: 1; }
-    .question-btn:hover { transform: translateY(-1px); box-shadow: 0 0 22px rgba(245,214,119,0.7); }
-
-    .question-btn.correct {
-      background: radial-gradient(circle at 0 0,#1f7a3c 0,#0b2512 70%);
-      border-color: #7fff9c;
-      box-shadow: 0 0 22px rgba(127,255,156,0.7);
+    .question-btn:hover .question-btn-inner {
+      transform: translateY(-1px);
+      filter: brightness(1.1);
+      box-shadow: 0 0 24px rgba(120,180,255,0.9);
     }
-    .question-btn.wrong {
-      background: radial-gradient(circle at 0 0,#7a1f1f 0,#250b0b 70%);
-      border-color: #ff9c9c;
+    .question-btn.correct .question-btn-inner {
+      box-shadow: 0 0 22px rgba(90,255,150,0.9);
+      filter: hue-rotate(70deg);
+    }
+    .question-btn.wrong .question-btn-inner {
+      box-shadow: 0 0 22px rgba(255,80,80,0.9);
+      filter: hue-rotate(-40deg) brightness(1.1);
       animation: flash-red 0.7s ease;
-      box-shadow: 0 0 22px rgba(255,120,120,0.7);
     }
     @keyframes flash-red {
-      0%,100% { box-shadow: 0 0 0 rgba(255,0,0,0); }
-      40% { box-shadow: 0 0 16px rgba(255,40,40,0.9); }
+      0%,100% { transform: translateY(0); }
+      40% { transform: translateY(-2px); }
     }
 
     .guess-panel {
@@ -276,40 +231,26 @@
       gap: 12px;
     }
     .guess-main-btn {
-      width: 150px;
-      height: 150px;
-      border-radius: 50%;
-      border: 4px solid #ffd65a;
-      background: radial-gradient(circle at 30% 20%,#ffe9c9 0,#ff2f2f 40%,#850606 100%);
-      color: #fff;
-      font-weight: 900;
-      font-size: 1.05rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.7);
-      box-shadow: 0 0 28px rgba(255,70,70,0.9);
+      width: 170px;
+      height: 170px;
+      border: none;
+      background: transparent url('button.png') center/contain no-repeat;
       cursor: pointer;
-      transition: transform 0.18s ease, box-shadow 0.18s ease;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      line-height: 1.1;
+      transition: transform 0.18s ease, filter 0.18s ease;
     }
-    .guess-main-btn-line { display: block; }
     .guess-main-btn:hover {
-      transform: translateY(-2px) scale(1.02);
-      box-shadow: 0 0 36px rgba(255,110,110,1);
+      transform: translateY(-2px) scale(1.03);
+      filter: brightness(1.05);
     }
     .guess-main-btn:disabled {
       opacity: 0.4;
       cursor: not-allowed;
-      box-shadow: none;
+      filter: grayscale(0.3);
       transform: none;
     }
 
     .guess-options {
-      margin-top: 10px;
+      margin-top: 6px;
       display: none;
       gap: 8px;
       flex-wrap: wrap;
@@ -416,19 +357,9 @@
     .win-sub { font-size: 0.9rem; }
     .sub-message { margin-top: 10px; font-size: 0.9rem; opacity: 0.9; }
 
-    .logo-bottom-left {
-      position: absolute;
-      bottom: 12px;
-      left: 22px;
-      width: 130px;
-      opacity: 0.95;
-      pointer-events: none;
-    }
-
     @media (max-width: 900px) {
       .question-panel { grid-template-columns: 1fr; }
-      .table { height: 260px; }
-      .seat-6 { top: 86%; }
+      .table { height: 300px; }
     }
   </style>
 </head>
@@ -445,52 +376,40 @@
   </div>
 
   <div class="app">
-    <div class="top-bar">
-      <button class="top-btn">Profile</button>
-      <button class="top-btn">Settings</button>
-      <button class="top-btn" id="walletConnect">Wallet connect</button>
+    <div class="top-row">
+      <button class="exit-btn" id="exitBtn">Exit Game</button>
+      <div class="top-right">
+        <button class="top-btn">Profile</button>
+        <button class="top-btn">Settings</button>
+        <button class="top-btn" id="walletConnect">Wallet connect</button>
+      </div>
     </div>
 
     <div class="main-card">
-      <img src="logo.png" alt="Guess Who Logo" class="logo-bottom-left">
-      <button class="exit-btn" id="exitBtn">Exit Game</button>
-
       <div class="main-inner">
         <div class="center-start">
-          <button class="start-btn" id="startGame">
-            <span class="start-btn-line">START</span>
-            <span class="start-btn-line">THE</span>
-            <span class="start-btn-line">GAME</span>
-          </button>
+          <button class="start-btn" id="startGame"></button>
         </div>
 
         <div class="table-wrapper">
           <div class="table" id="table">
-            <div class="table-logo">Avalanche</div>
-
             <div class="player-seat seat-1" data-seat="1">
-              <div class="player-card"><div class="player-card-inner" id="cardName1">–</div></div>
-              <div class="player-body"><div class="player-number">1</div></div>
+              <div class="player-name-tag" id="cardName1">Player 1</div>
             </div>
             <div class="player-seat seat-2" data-seat="2">
-              <div class="player-card"><div class="player-card-inner" id="cardName2">–</div></div>
-              <div class="player-body"><div class="player-number">2</div></div>
+              <div class="player-name-tag" id="cardName2">Player 2</div>
             </div>
             <div class="player-seat seat-3" data-seat="3">
-              <div class="player-card"><div class="player-card-inner" id="cardName3">–</div></div>
-              <div class="player-body"><div class="player-number">3</div></div>
+              <div class="player-name-tag" id="cardName3">Player 3</div>
             </div>
             <div class="player-seat seat-4" data-seat="4">
-              <div class="player-card"><div class="player-card-inner" id="cardName4">–</div></div>
-              <div class="player-body"><div class="player-number">4</div></div>
+              <div class="player-name-tag" id="cardName4">Player 4</div>
             </div>
             <div class="player-seat seat-5" data-seat="5">
-              <div class="player-card"><div class="player-card-inner" id="cardName5">–</div></div>
-              <div class="player-body"><div class="player-number">5</div></div>
+              <div class="player-name-tag" id="cardName5">Player 5</div>
             </div>
             <div class="player-seat seat-6" data-seat="6">
-              <div class="player-card"><div class="player-card-inner" id="cardName6">–</div></div>
-              <div class="player-body"><div class="player-number">6</div></div>
+              <div class="player-name-tag" id="cardName6">Player 6</div>
             </div>
           </div>
         </div>
@@ -500,11 +419,7 @@
             <div class="question-grid" id="questionGrid"></div>
           </div>
           <div class="guess-panel">
-            <button class="guess-main-btn" id="guessBtn" disabled>
-              <span class="guess-main-btn-line">GUESS</span>
-              <span class="guess-main-btn-line">WHO</span>
-              <span class="guess-main-btn-line">?</span>
-            </button>
+            <button class="guess-main-btn" id="guessBtn" disabled></button>
             <div class="guess-options" id="guessOptions"></div>
           </div>
         </div>
@@ -532,7 +447,7 @@
 
     let characters = [];
     let assignedCharacters = [];
-    let activeSeat = 1;       // 1 = you, 2-6 = bots
+    let activeSeat = 1;       // you
     let currentSeat = null;
     let askedQuestionIds = new Set();
     let yesStreakForSeat = {};
@@ -598,17 +513,12 @@
 
     async function handleStart() {
       if (!characters.length) await loadCharacters();
-      if (!window.ethereum) {
-        const ok = confirm('MetaMask not found. Continue demo without wallet?');
-        if (!ok) return;
-      } else if (!account) {
+      if (window.ethereum && !account) {
         await connectWallet();
       }
-
       const confirmed = confirm('Pay 0.01 AVAX entry fee to start?');
       if (!confirmed) return;
-
-      // Here smart contract joinGame() with 0.01 AVAX will be called in real version
+      // Here: smart contract call joinGame() with 0.01 AVAX
       initGameState();
     }
 
@@ -630,18 +540,16 @@
         const label = document.getElementById('cardName' + seat);
         label.textContent = char.name;
         const seatEl = document.querySelector('.player-seat[data-seat="' + seat + '"]');
-        seatEl.classList.remove('player-out');
-        seatEl.classList.remove('player-name-hidden');
-        seatEl.querySelectorAll('.turn-badge').forEach(b => b.remove());
+        seatEl.classList.remove('player-out', 'player-name-hidden', 'current-turn');
         remainingIdsPerSeat[seat] = assignedCharacters.map(c => c.id);
         yesStreakForSeat[seat] = 0;
       }
 
-      const randomFirst = Math.floor(Math.random() * 6) + 1;
-      currentSeat = randomFirst;
-      const activeSeatEl = document.querySelector('.player-seat[data-seat="' + activeSeat + '"]');
-      activeSeatEl.classList.add('player-name-hidden'); // you do not see your own
-      setTurnBadge(currentSeat);
+      const mySeatEl = document.querySelector('.player-seat[data-seat="' + activeSeat + '"]');
+      mySeatEl.classList.add('player-name-hidden');
+
+      currentSeat = Math.floor(Math.random() * 6) + 1;
+      setCurrentTurn(currentSeat);
       showNotif('Player ' + currentSeat + ' starts', 'yes');
       renderQuestionsForSeat(currentSeat);
       updateGuessButton();
@@ -650,13 +558,10 @@
       }
     }
 
-    function setTurnBadge(seatNumber) {
-      document.querySelectorAll('.turn-badge').forEach(b => b.remove());
+    function setCurrentTurn(seatNumber) {
+      document.querySelectorAll('.player-seat').forEach(s => s.classList.remove('current-turn'));
       const seatEl = document.querySelector('.player-seat[data-seat="' + seatNumber + '"]');
-      const badge = document.createElement('div');
-      badge.className = 'turn-badge';
-      badge.textContent = (seatNumber === activeSeat ? 'You' : 'Bot ' + seatNumber) + ' turn';
-      seatEl.appendChild(badge);
+      seatEl.classList.add('current-turn');
     }
 
     function renderQuestionsForSeat(seat) {
@@ -668,7 +573,10 @@
         btn.className = 'question-btn';
         btn.dataset.qid = q.id;
         btn.dataset.attr = q.attr;
-        btn.innerHTML = '<span class="label">' + q.text + '</span>';
+        const inner = document.createElement('div');
+        inner.className = 'question-btn-inner';
+        inner.textContent = q.text;
+        btn.appendChild(inner);
         if (seat === activeSeat) {
           btn.addEventListener('click', () => handleQuestionClick(seat, btn, q));
         }
@@ -687,7 +595,7 @@
       const isYes = v === 1;
 
       if (v === 2) {
-        if (btn) btn.classList.add('wrong');
+        btn.classList.add('wrong');
         showNotif('Unknown', 'no');
         askedQuestionIds.add(question.id);
         yesStreakForSeat[seat] = 0;
@@ -698,7 +606,7 @@
 
       askedQuestionIds.add(question.id);
       if (isYes) {
-        if (btn) btn.classList.add('correct');
+        btn.classList.add('correct');
         showNotif('YES', 'yes');
         yesStreakForSeat[seat] += 1;
         filterRemainingForSeat(seat, question.attr, true);
@@ -708,7 +616,7 @@
           if (seat !== activeSeat) setTimeout(botTurnStep, 600);
         }, 600);
       } else {
-        if (btn) btn.classList.add('wrong');
+        btn.classList.add('wrong');
         showNotif('NO', 'no');
         filterRemainingForSeat(seat, question.attr, false);
         yesStreakForSeat[seat] = 0;
@@ -741,7 +649,7 @@
           break;
         }
       }
-      setTurnBadge(currentSeat);
+      setCurrentTurn(currentSeat);
       renderQuestionsForSeat(currentSeat);
       updateGuessButton();
       if (currentSeat !== activeSeat && gameStarted) {
@@ -755,7 +663,6 @@
       if (!qButtons.length) return;
       const btn = qButtons[Math.floor(Math.random() * qButtons.length)];
       const qid = btn.dataset.qid;
-      const attr = btn.dataset.attr;
       const question = QUESTION_POOL.find(q => q.id === qid);
       answerQuestion(currentSeat, btn, question);
 
@@ -837,9 +744,7 @@
       gameStarted = false;
     }
 
-    function handleExit() {
-      window.location.reload();
-    }
+    function handleExit() { window.location.reload(); }
 
     startBtn.addEventListener('click', handleStart);
     guessBtn.addEventListener('click', handleGuessClick);
