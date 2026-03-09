@@ -6,15 +6,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-      background: #05030a;
-      color: #fdfdfd;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-    }
+ body {
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  background: radial-gradient(circle at top, #05030a 0, #020108 50%, #000 100%);
+  color: #fdfdfd;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
     .app {
       width: 100%;
       max-width: 1400px;
@@ -79,44 +79,51 @@
       margin-bottom: 18px;
     }
     .start-btn {
-      width: 260px;
-      height: 90px;
-      border: none;
-      background: transparent url('start.png') center/contain no-repeat;
-      cursor: pointer;
-      transition: transform 0.18s ease, filter 0.18s ease;
-    }
+  width: 260px;
+  height: 90px;
+  border: none;
+  background: transparent;
+  background-image: url('start.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  cursor: pointer;
+  transition: transform 0.18s ease, filter 0.18s ease;
+}
     .start-btn:hover { transform: scale(1.03); filter: brightness(1.1); }
 
     .table-wrapper {
-      display: flex;
-      justify-content: center;
-      margin-top: 6px;
-      margin-bottom: 26px;
-    }
-    .table {
-      position: relative;
-      width: 100%;
-      max-width: 900px;
-      height: 360px;
-      background: url('table.png') center/contain no-repeat;
-    }
+  display: flex;
+  justify-content: center;
+  margin-top: 6px;
+  margin-bottom: 30px;
+  height: 45vh;         
+}
 
-    .player-seat {
-      position: absolute;
-      width: 140px;
-      height: 160px;
-      display: flex;
-      justify-content: center;
-      align-items: flex-end;
-    }
-    /* tune these to match heads on table.png */
-    .seat-1 { bottom: 30px; left: 50%; transform: translateX(-50%); }
-    .seat-2 { top: 115px; left: 130px; }
-    .seat-3 { top: 70px; left: 330px; }
-    .seat-4 { top: 70px; right: 330px; }
-    .seat-5 { top: 115px; right: 130px; }
-    .seat-6 { bottom: 40px; left: 85px; }
+.table {
+  position: relative;
+  width: 100%;
+  max-width: 1150px;         
+  height: 100%;            
+ background: url('table.png') center/contain no-repeat,
+            radial-gradient(circle at top, #17141f 0, #050208 70%);
+}
+
+
+ .player-seat {
+  position: absolute;
+  width: 120px;
+  height: 40px;  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.seat-1 { top: 40px; left: 50%; transform: translateX(-50%); }
+.seat-2 { top: 70px; left: 18%; }
+.seat-3 { top: 70px; left: 36%; }
+.seat-4 { top: 70px; right: 36%; }
+.seat-5 { top: 70px; right: 18%; }
+.seat-6 { top: 210px; left: 50%; transform: translateX(-50%); }
 
     .player-name-tag {
       padding: 4px 10px;
@@ -153,35 +160,35 @@
       }
     }
 
-    .player-name-hidden .player-name-tag {
-      background: repeating-linear-gradient(
-        45deg,
-        #b33b3b,
-        #b33b3b 8px,
-        #f7cfbf 8px,
-        #f7cfbf 16px
-      );
-      color: transparent;
-      border-color: rgba(255,255,255,0.1);
-      box-shadow: none;
-      text-shadow: none;
-    }
+ .player-name-hidden .player-name-tag {
+  color: transparent;
+  text-shadow: none;
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
     .player-out {
       filter: grayscale(0.9) brightness(0.4);
     }
 
     .question-panel {
       margin-top: 8px;
-      display: grid;
-      grid-template-columns: 3fr 1.5fr;
-      gap: 18px;
-      align-items: center;
-    }
-    .question-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 12px;
-    }
+  display: grid;
+  grid-template-columns: 2fr 1fr; 
+  gap: 18px;
+  align-items: flex-start;
+}
+    .qa-left {
+  display: flex;
+  justify-content: center;
+}
+.question-grid {
+  width: 100%;
+  max-width: 520px;           
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
     .question-btn {
       position: relative;
       width: 100%;
@@ -191,6 +198,11 @@
       padding: 8px 18px;
     }
     .question-btn-inner {
+      background: transparent;
+  background-image: url('blue.png');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: center;
       position: relative;
       padding: 10px 18px;
       border-radius: 999px;
@@ -230,14 +242,18 @@
       align-items: center;
       gap: 12px;
     }
-    .guess-main-btn {
-      width: 170px;
-      height: 170px;
-      border: none;
-      background: transparent url('button.png') center/contain no-repeat;
-      cursor: pointer;
-      transition: transform 0.18s ease, filter 0.18s ease;
-    }
+.guess-main-btn {
+  width: 170px;
+  height: 170px;
+  border: none;
+  background: transparent;
+  background-image: url('button.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  cursor: pointer;
+  transition: transform 0.18s ease, filter 0.18s ease;
+}
     .guess-main-btn:hover {
       transform: translateY(-2px) scale(1.03);
       filter: brightness(1.05);
@@ -340,13 +356,24 @@
       100% { opacity:1; transform:scale(1); }
     }
     .win-card {
-      padding: 24px 30px;
-      border-radius: 20px;
-      background: radial-gradient(circle at top,#fff6c4,#ffc857,#ff7b37);
-      color:#3b0b20;
-      text-align: center;
-      box-shadow: 0 22px 55px rgba(0,0,0,0.9);
-    }
+  position: relative;
+  padding: 24px 30px;
+  border-radius: 20px;
+  background: radial-gradient(circle at top,#fff6c4,#ffc857,#ff7b37);
+  color:#3b0b20;
+  text-align: center;
+  box-shadow: 0 22px 55px rgba(0,0,0,0.9);
+}
+    .win-close {
+  position: absolute;
+  top: 8px;
+  left: 10px;
+  border: none;
+  background: transparent;
+  font-size: 1rem;
+  cursor: pointer;
+  color: #5a2a0a;
+}
     .win-title {
       font-weight: 900;
       font-size: 1.8rem;
@@ -367,13 +394,14 @@
   <div class="notification" id="notif"></div>
   <div class="fireworks" id="fireworks"></div>
   <div class="win-overlay" id="winOverlay">
-    <div class="win-card">
-      <div class="win-title">YOU WON!</div>
-      <div class="win-amount" id="winAmount">+0.00 AVAX</div>
-      <div class="win-sub">Prize sent to your wallet</div>
-      <div class="sub-message">SORRY, TRY ANOTHER ROUND! for other players</div>
-    </div>
+  <div class="win-card">
+    <button class="win-close" id="winClose">✕</button>
+    <div class="win-title" id="winTitle">YOU WON!</div>
+    <div class="win-amount" id="winAmount">+0.00 AVAX</div>
+    <div class="win-sub" id="winSub">Prize sent to your wallet</div>
+    <div class="sub-message" id="winMessage">SORRY, TRY ANOTHER ROUND! for other players</div>
   </div>
+</div>
 
   <div class="app">
     <div class="top-row">
@@ -454,6 +482,9 @@
     let remainingIdsPerSeat = {};
     let gameStarted = false;
     let account = null;
+    let turnTimer = null;
+    let turnDeadline = null;
+    const TURN_MS = 60_000;
 
     const notifEl = document.getElementById('notif');
     const startBtn = document.getElementById('startGame');
@@ -546,7 +577,7 @@
       }
 
       const mySeatEl = document.querySelector('.player-seat[data-seat="' + activeSeat + '"]');
-      mySeatEl.classList.add('player-name-hidden');
+mySeatEl.classList.add('player-name-hidden');
 
       currentSeat = Math.floor(Math.random() * 6) + 1;
       setCurrentTurn(currentSeat);
@@ -564,25 +595,58 @@
       seatEl.classList.add('current-turn');
     }
 
-    function renderQuestionsForSeat(seat) {
-      questionGrid.innerHTML = '';
-      const usedIds = Array.from(askedQuestionIds);
-      const roundQuestions = randomSample(QUESTION_POOL, 4, usedIds);
-      roundQuestions.forEach(q => {
-        const btn = document.createElement('button');
-        btn.className = 'question-btn';
-        btn.dataset.qid = q.id;
-        btn.dataset.attr = q.attr;
-        const inner = document.createElement('div');
-        inner.className = 'question-btn-inner';
-        inner.textContent = q.text;
-        btn.appendChild(inner);
-        if (seat === activeSeat) {
-          btn.addEventListener('click', () => handleQuestionClick(seat, btn, q));
-        }
-        questionGrid.appendChild(btn);
-      });
+   function renderQuestionsForSeat(seat) {
+  questionGrid.innerHTML = '';
+  const usedIds = Array.from(askedQuestionIds);
+  const roundQuestions = randomSample(QUESTION_POOL, 4, usedIds);
+
+  if (!roundQuestions.length) {
+    if (seat === activeSeat && gameStarted) {
+      const options = buildGuessOptions(seat);
+      showNotif('No more questions, time to guess!', 'no');
+      showGuessOptions(options);
+      guessBtn.disabled = false;
     }
+    return;
+  }
+  
+  roundQuestions.forEach(q => {
+    const btn = document.createElement('button');
+    btn.className = 'question-btn';
+    btn.dataset.qid = q.id;
+    btn.dataset.attr = q.attr;
+    const inner = document.createElement('div');
+    inner.className = 'question-btn-inner';
+    inner.textContent = q.text;
+    btn.appendChild(inner);
+    if (seat === activeSeat) {
+      btn.addEventListener('click', () => handleQuestionClick(seat, btn, q));
+    }
+    questionGrid.appendChild(btn);
+  });
+function showEndResult(isWinner) {
+  fireworksEl.classList.toggle('show', isWinner);
+
+  if (isWinner) {
+    const prize = 0.05;
+    winTitleEl.textContent = 'YOU WON!';
+    winAmountEl.textContent = '+' + prize.toFixed(2) + ' AVAX';
+    winSubEl.textContent = 'Prize sent to your wallet';
+    winMessageEl.textContent = 'SORRY, TRY ANOTHER ROUND! for other players';
+  } else {
+    winTitleEl.textContent = 'TRY ANOTHER ROUND';
+    winAmountEl.textContent = '+0.00 AVAX';
+    winSubEl.textContent = 'This time you did not win';
+    winMessageEl.textContent = 'SORRY, TRY ANOTHER ROUND!';
+  }
+
+  winOverlay.classList.add('show');
+}
+
+
+     
+}
+
 
     function handleQuestionClick(seat, btn, question) {
       if (!gameStarted || seat !== currentSeat || seat !== activeSeat) return;
@@ -613,7 +677,7 @@
         updateGuessButton();
         setTimeout(() => {
           renderQuestionsForSeat(seat);
-          if (seat !== activeSeat) setTimeout(botTurnStep, 600);
+          if (seat !== activeSeat) setTimeout(botTurnStep, 3000);
         }, 600);
       } else {
         btn.classList.add('wrong');
@@ -640,22 +704,67 @@
     }
 
     function passTurn() {
-      let nextSeat = currentSeat;
-      for (let i = 0; i < 6; i++) {
-        nextSeat = ((nextSeat) % 6) + 1;
-        const seatEl = document.querySelector('.player-seat[data-seat="' + nextSeat + '"]');
-        if (!seatEl.classList.contains('player-out')) {
-          currentSeat = nextSeat;
-          break;
-        }
-      }
+      clearTurnTimer();
+let nextSeat = currentSeat;
+  let attempts = 0;
+  while (attempts < 6) {
+    nextSeat = ((nextSeat) % 6) + 1;
+    const seatEl = document.querySelector('.player-seat[data-seat="' + nextSeat + '"]');
+    if (!seatEl.classList.contains('player-out')) {
+      currentSeat = nextSeat;
       setCurrentTurn(currentSeat);
       renderQuestionsForSeat(currentSeat);
       updateGuessButton();
       if (currentSeat !== activeSeat && gameStarted) {
-        setTimeout(botTurnStep, 800);
+        setTimeout(botTurnStep, 4000);
+      } else if (gameStarted) {
+        startTurnTimer();
       }
+      return;
     }
+    attempts++;
+  }
+
+  // все выбыли → завершаем игру без победителя
+  gameStarted = false;
+  showEndResult(false);
+}
+      function startTurnTimer() {
+  clearTurnTimer();
+  turnDeadline = Date.now() + TURN_MS;
+  turnTimer = setTimeout(() => {
+    handleTurnTimeout();
+  }, TURN_MS);
+}
+
+function clearTurnTimer() {
+  if (turnTimer) {
+    clearTimeout(turnTimer);
+    turnTimer = null;
+  }
+}
+
+function handleTurnTimeout() {
+  if (!gameStarted) return;
+  // если игрок не ответил за минуту — принудительно передаём ход
+  showNotif('Time is up!', 'no');
+  yesStreakForSeat[currentSeat] = 0;
+  updateGuessButton();
+  passTurn();
+}
+
+  setCurrentTurn(currentSeat);
+  renderQuestionsForSeat(currentSeat);
+  updateGuessButton();
+  
+  if (currentSeat === activeSeat && gameStarted) {
+    startTurnTimer();
+  }
+  
+  if (currentSeat !== activeSeat && gameStarted) {
+    setTimeout(botTurnStep, 4000);
+  }
+}
 
     function botTurnStep() {
       if (!gameStarted || currentSeat === activeSeat) return;
@@ -727,22 +836,23 @@
     }
 
     function handleWrongGuess(seat) {
-      const seatEl = document.querySelector('.player-seat[data-seat="' + seat + '"]');
-      seatEl.classList.add('player-out');
-      showNotif('NO', 'no');
-      yesStreakForSeat[seat] = 0;
-      if (seat === activeSeat) updateGuessButton();
-      passTurn();
-    }
+  const seatEl = document.querySelector('.player-seat[data-seat="' + seat + '"]');
+  seatEl.classList.add('player-out');
+  showNotif('NO', 'no');
+  yesStreakForSeat[seat] = 0;
+  if (seat === activeSeat) updateGuessButton();
+  passTurn();
+}
 
-    function handleWin(seat) {
-      fireworksEl.classList.add('show');
-      const prize = 0.05;
-      winAmountEl.textContent = '+' + prize.toFixed(2) + ' AVAX';
-      winOverlay.classList.add('show');
-      showNotif('YOU WON!', 'win');
-      gameStarted = false;
-    }
+function handleWin(seat) {
+  clearTurnTimer();
+  gameStarted = false;
+  const isYou = (seat === activeSeat);
+  showEndResult(isYou);
+}
+
+function handleExit() { window.location.reload(); }
+
 
     function handleExit() { window.location.reload(); }
 
@@ -750,7 +860,12 @@
     guessBtn.addEventListener('click', handleGuessClick);
     exitBtn.addEventListener('click', handleExit);
     walletConnectBtn.addEventListener('click', connectWallet);
+const winTitleEl = document.getElementById('winTitle');
+const winSubEl = document.getElementById('winSub');
+const winMessageEl = document.getElementById('winMessage');
+const winClose = document.getElementById('winClose');
 
+winClose.addEventListener('
     loadCharacters();
   </script>
 </body>
